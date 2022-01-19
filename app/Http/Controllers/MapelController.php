@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Mapel;
+use App\Models\Kelas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -12,10 +13,17 @@ class MapelController extends Controller
     {
         $this->middleware('auth');
     }
-    public function showMapel()
+    public function showMapel($kelas)
     {
-        $data = Mapel::get();
-        return view('mapel',compact('data'));
+        $cek = Kelas::where('slug',$kelas)->firstOrfail();
+        $data = Mapel::where('kelas_slug',$kelas)->get();
+        $kelas = $kelas;
+        if(auth()->user()->nomor==$cek->id){
+        return view('mapel',compact('data','kelas'));
+        }
+        return view('errors.404');
+        
+        // return view('logout');
     }
     public function addMapel()
     {

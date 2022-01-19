@@ -30,14 +30,14 @@
     <title>Document</title>
 </head>
 <body> 
-    @foreach ($data2 as $item)
+    @foreach ($data as $item)
     <div>
         <div>{{$item->nama}}</div>
         <div>{{$item->isi}}</div>
 
     @if (auth()->user()->level>1)
         <a href="/deleteTugas/{{ $item->id }}"><button class="btn">Delete</button></a>
-        <a href="/editTugas/{{ $item->mapel_slug }}/{{ $item->bab_slug }}/{{ $item->slug }}"><button class="btn">Edit</button></a>
+        <a href="/editTugas/{{$item->kelas_slug}}/{{ $item->mapel_slug }}/{{ $item->bab_slug }}/{{ $item->slug }}"><button class="btn">Edit</button></a>
     @else
     <div>
         <div></div>
@@ -48,7 +48,7 @@
     @endforeach
     @if (auth()->user()->level>1)
     <div>
-        <a href="/addTugas/{{ $mapel }}/{{$slugs}}">tambah tugas</a>
+        <a href="/addTugas/{{$kelas}}/{{ $mapel }}/{{$bab}}">tambah tugas</a>
     </div>
     @else
     <div></div>

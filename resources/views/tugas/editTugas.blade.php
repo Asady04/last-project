@@ -13,7 +13,7 @@
         </div>
         <!-- /.card-header -->
         <!-- form start -->
-        <form role="form" action="/updateTugas" method="POST">
+        <form role="form" action="/updateTugas/{{$data->kelas_slug}}/{{$data->mapel_slug}}/{{$data->bab_slug}}/{{$data->slug}}" method="POST">
             @csrf
             <input type="hidden" name="id" value="{{ $data->id }}">
           <div class="card-body">
@@ -27,6 +27,7 @@
               </div>
             <input type="hidden" value="{{$data->bab_slug}}" name="bab_slug" id="bab_slug">
             <input type="hidden" value="{{$data->mapel_slug}}" name="mapel_slug" id="mapel_slug">
+            <input type="hidden" value="{{$data->kelas_slug}}" name="kelas_slug" id="kelas_slug">
           </div>
           <!-- /.card-body -->
     

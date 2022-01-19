@@ -9,7 +9,7 @@
 <body>
     @foreach ($data as $item)
     <div>
-        <a href="{{$item->slug}}">{{$item->nama}}</a>
+        <a href="/bab/{{$item->kelas_slug}}/{{$item->slug}}">{{$item->nama}}</a>
         @if (auth()->user()->level==3)
         <a href="/deleteMapel/{{ $item->id }}"><button class="btn btn-danger">Delete</button></a>
         @else
@@ -20,7 +20,7 @@
     @endforeach
     @if (auth()->user()->level==3)
     <div>
-        <a href="mapel/addMapel">tambah mapel</a>
+        <a href="/addMapel/{{$kelas}}">tambah mapel</a>
     </div>
     @else
     <div></div>

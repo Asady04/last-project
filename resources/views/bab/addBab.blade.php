@@ -13,7 +13,7 @@
         </div>
         <!-- /.card-header -->
         <!-- form start -->
-        <form role="form" action="/saveBab/{{$data}}" method="POST">
+        <form role="form" action="/saveBab/{{$kelas}}/{{$mapel}}" method="POST">
             @csrf
           <div class="card-body">
             <div class="form-group">
@@ -24,7 +24,8 @@
               <label for="topik">Topik</label>
               <input type="text" class="form-control" id="topik" placeholder="Enter name" name="topik">
             </div>
-            <input type="hidden" value="{{$data}}" name="mapel_slug" id="mapel_slug">
+            <input type="hidden" value="{{$mapel}}" name="mapel_slug" id="mapel_slug">
+            <input type="hidden" value="{{$kelas}}" name="kelas_slug" id="kelas_slug">
           </div>
           <!-- /.card-body -->
     

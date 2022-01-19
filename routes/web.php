@@ -19,35 +19,45 @@ $url = "App\http\Controllers";
 // });
 
 Auth::routes();
+Route::get('/logout',"App\Http\Controllers\KelasController@logout");
 
-// Route::get('/',$url. "\KelasController@showKelas");
-Route::get('/',$url. "\MapelController@showMapel");
+Route::get('/',$url. "\KelasController@userProgress");
+// Route::get('/',$url. "\MapelController@showMapel");
 
+
+// Mapel
+Route::get('murid/{kelas}',$url. "\MapelController@showMapel");
 
 // Bab
-Route::get('/{slug}',$url. "\BabController@showBab");
+Route::get('bab/{kelas}/{mapel}',$url. "\BabController@showBab");
 
 // Tugas
-Route::get('tugas/{mapel}/{slug}',$url. "\TugasController@showTugas");
+Route::get('tugas/{kelas}/{mapel}/{bab}',$url. "\TugasController@showTugas");
 
-Route::group(['middleware' => ['admin']],function(){
+Route::group(['middleware' => ['ceklevel:3']],function(){
     // Mapel
 Route::get('mapel/addMapel', "App\Http\Controllers\MapelController@addMapel");
 Route::post('mapel/saveMapel', "App\Http\Controllers\MapelController@saveMapel");
 Route::get('deleteMapel/{id}',"App\Http\Controllers\MapelController@deleteMapel");
 });
 
-Route::group(['middleware' => ['guru']],function(){
-    
-Route::get('/addBab/{mapel}', "App\Http\Controllers\BabController@addBab");
-Route::post('/saveBab/{mapel}', "App\Http\Controllers\BabController@saveBab");
-Route::get('deleteBab/{id}',"App\Http\Controllers\BabController@deleteBab");
-Route::get('editBab/{mapel}/{slug}',"App\Http\Controllers\BabController@editBab");
-Route::post('updateBab/{mapel}',"App\Http\Controllers\BabController@updateBab");
+Route::group(['middleware' => ['ceklevel:2,3']],function(){
 
-Route::get('/addTugas/{mapel}/{slug}',"App\Http\Controllers\TugasController@addTugas");
-Route::post('/saveTugas', "App\Http\Controllers\TugasController@saveTugas");
+    // Bab
+Route::get('/addBab/{kelas}/{mapel}', "App\Http\Controllers\BabController@addBab");
+Route::post('/saveBab/{kelas}/{mapel}', "App\Http\Controllers\BabController@saveBab");
+Route::get('/deleteBab/{id}',"App\Http\Controllers\BabController@deleteBab");
+Route::get('/editBab/{kelas}/{mapel}/{bab}',"App\Http\Controllers\BabController@editBab");
+Route::post('/updateBab/{kelas}/{mapel}/{bab}',"App\Http\Controllers\BabController@updateBab");
+
+    // Tugas
+Route::get('/addTugas/{kelas}/{mapel}/{bab}',"App\Http\Controllers\TugasController@addTugas");
+Route::post('/saveTugas/{kelas}/{mapel}/{bab}', "App\Http\Controllers\TugasController@saveTugas");
 Route::get('/deleteTugas/{id}',"App\Http\Controllers\TugasController@deleteTugas");
-Route::get('/editTugas/{mapel}/{bab}/{slug}',"App\Http\Controllers\TugasController@editTugas");
-Route::post('/updateTugas',"App\Http\Controllers\TugasController@updateTugas");
+Route::get('/editTugas/{kelas}/{mapel}/{bab}/{slug}',"App\Http\Controllers\TugasController@editTugas");
+Route::post('/updateTugas/{kelas}/{mapel}/{bab}/{slug}',"App\Http\Controllers\TugasController@updateTugas");
+
+    // Guru
+Route::get('/guru/{guru}',"App\Http\Controllers\KelasController@showKelas");
+Route::get('/guru/{guru}/{kelas}',"App\Http\Controllers\KelasController@showMapel");
 });

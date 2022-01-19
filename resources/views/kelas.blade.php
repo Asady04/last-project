@@ -29,29 +29,11 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
 </head>
-<body>
-    @foreach ($data as $item)
-    <div>
-        <a href="/tugas/{{ $item->kelas_slug }}/{{ $item->mapel_slug }}/{{$item->slug}}">{{$item->nama}}</a>
-        <div>{{$item->topik}}</div>
-        @if (auth()->user()->level>1)
+<body> 
+    @foreach ($kelas as $item)
         <div>
-            <a href="/deleteBab/{{ $item->id }}"><button class="btn">Delete</button></a>
-            <a href="/editBab/{{ $item->kelas_slug }}/{{ $item->mapel_slug }}/{{ $item->slug }}"><button class="btn">Edit</button></a>
+        <a href="/guru/{{$guru}}/{{$item->slug}}">{{$item->nama_kelas}}</a>
         </div>
-        @else
-        <div></div>
-        @endif
-    </div>
     @endforeach
-
-    @if (auth()->user()->level>1)
-    <div>
-        <a href="/addBab/{{$kelas}}/{{$mapel}}">tambah bab</a>
-    </div>
-    @else
-    <div></div>
-    @endif
-    
 </body>
 </html>

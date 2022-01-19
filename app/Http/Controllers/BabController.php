@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Bab;
 use App\Models\Mapel;
+use App\Models\Tugas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class BabController extends Controller
 {
@@ -13,18 +15,36 @@ class BabController extends Controller
     {
         $this->middleware('auth');
     }
-    public function showBab($mapel)
+    public function showBab($kelas,$mapel)
     {
-        $data = Bab::where('mapel_slug',$mapel)->get();
-        $secure = Mapel::where('slug',$mapel)->firstOrfail();
+        $data = Bab::where('kelas_slug',$kelas)->where('mapel_slug',$mapel)->get();
+        $kelas = $kelas;
         $mapel = $mapel;
-        return view('bab',compact('data','mapel'));
-    }
-    public function addBab($mapel)
-    {
-        $data = $mapel;
+
+        // keamanan
         $secure = Mapel::where('slug',$mapel)->firstOrfail();
-        return view('bab.addBab',compact('data'));
+        if(auth()->user()->level == 2 && auth()->user()->name == $secure->guru){
+            return view('bab',compact('data','mapel','kelas'));
+        }elseif(auth()->user()->level == 1){
+            return view('bab',compact('data','mapel','kelas'));
+        }else{
+            return view('errors.404');
+        }
+    }
+    public function addBab($kelas,$mapel)
+    {
+        $mapel = $mapel;
+        $kelas = $kelas;
+
+        // keamanan
+        $secure = Mapel::where('slug',$mapel)->firstOrfail();
+
+        if(auth()->user()->level == 2 && auth()->user()->name == $secure->guru){
+            return view('bab.addBab',compact('kelas','mapel'));
+        }else{
+            return view('errors.404');
+        }
+        return view('bab.addBab',compact('kelas','mapel'));
     }
     public function saveBab(Request $request)
     {
@@ -33,29 +53,40 @@ class BabController extends Controller
         $data->topik = $request->topik;
         $data->slug = Str::slug($request->nama_bab);
         $data->mapel_slug = $request->mapel_slug;
+        $data->kelas_slug = $request->kelas_slug;
         $data->save();
-        return redirect($data->mapel_slug);
+        return redirect('/bab'.'/'.$data->kelas_slug.'/'.$data->mapel_slug);
     }
-    public function editBab($mapel,$slug)
+    public function editBab($kelas,$mapel,$bab)
     {
-        $data = Bab::where('mapel_slug',$mapel)->where('slug',$slug)->firstOrfail();
-        $mapel = $mapel;
-        return view('bab.editBab',compact('mapel','data'));
+        $data = Bab::where('kelas_slug',$kelas)->where('mapel_slug',$mapel)->where('slug',$bab)->firstOrfail();
+
+        // keamanan
+        $secure = Mapel::where('slug',$mapel)->firstOrfail();
+
+        if(auth()->user()->level == 2 && auth()->user()->name == $secure->guru){
+            return view('bab.editBab',compact('data'));
+        }else{
+            return view('errors.404');
+        }
+        return view('bab.editBab',compact('data'));
     }
     public function updateBab(Request $request)
     {
         $data = Bab::where('id',$request->id)->first();
         $data->nama = $request->nama_bab;
         $data->mapel_slug = $request->mapel_slug;
+        $data->kelas_slug = $request->kelas_slug;
         $data->slug = Str::slug($request->nama_bab);;
         $data->topik = $request->topik;
         $data->save();
-        return redirect($data->mapel_slug);
+        return redirect('/bab'.'/'.$data->kelas_slug.'/'.$data->mapel_slug);
     }
     public function deleteBab($id)
     {
         $data = Bab::where('id',$id)->first();
+        DB::table('tugas')->where('kelas_slug',$data->kelas_slug)->where('mapel_slug',$data->mapel_slug)->where('bab_slug',$data->slug)->delete();
         $data->delete();
-        return redirect($data->mapel_slug);
+        return redirect('/bab'.'/'.$data->kelas_slug.'/'.$data->mapel_slug);
     }
 }

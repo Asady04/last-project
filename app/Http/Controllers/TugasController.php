@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Tugas;
 use App\Models\Bab;
+use App\Models\Mapel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -13,19 +14,43 @@ class TugasController extends Controller
     {
         $this->middleware('auth');
     }
-    public function showTugas($mapel,$slug)
+    public function showTugas($kelas,$mapel,$bab)
     {
-        $data2 = Tugas::where('mapel_slug',$mapel)->where('bab_slug',$slug)->get();
-        $slugs = $slug;
+        $data = Tugas::where('kelas_slug',$kelas)->where('mapel_slug',$mapel)->where('bab_slug',$bab)->get();
+        $kelas = $kelas;
         $mapel = $mapel;
-        return view('tugas',compact('data2','slugs','mapel'));
+        $bab = $bab;
+
+        // keamanan
+        $slugFail = Bab::where('slug',$bab)->firstOrfail();
+        $secure = Mapel::where('slug',$mapel)->firstOrfail();
+
+        if(auth()->user()->level == 2 && auth()->user()->name == $secure->guru){
+            return view('tugas',compact('data','kelas','mapel','bab'));
+        }elseif(auth()->user()->level == 1){
+            return view('tugas',compact('data','kelas','mapel','bab'));
+        }else{
+            return view('errors.404');
+        }
+        
     }
-    public function addTugas($mapel,$slug)
+    public function addTugas($kelas,$mapel,$bab)
     {
-        $data = $slug;
+        $bab = $bab;
         $mapel = $mapel;
-        $secure = Bab::where('slug',$slug)->firstOrfail();
-        return view('tugas.addTugas',compact('data','mapel'));
+        $kelas = $kelas;
+
+        // keamanan
+        $slugFail = Bab::where('slug',$bab)->firstOrfail();
+        $secure = Mapel::where('slug',$mapel)->firstOrfail();
+
+        if(auth()->user()->level == 2 && auth()->user()->name == $secure->guru){
+            return view('tugas.addTugas',compact('bab','mapel','kelas'));
+        }else{
+            return view('errors.404');
+        }
+    
+        return view('tugas.addTugas',compact('bab','mapel','kelas'));
     }
     public function saveTugas(Request $request)
     {
@@ -35,19 +60,30 @@ class TugasController extends Controller
         $data->slug = Str::slug($request->nama_tugas);
         $data->bab_slug = $request->bab_slug;
         $data->nilai = $request->nilai;
-        $data->mapel_slug = $request->mapel;
+        $data->mapel_slug = $request->mapel_slug;
+        $data->kelas_slug = $request->kelas_slug;
         $data->save();
-        return redirect('tugas/'.$data->mapel_slug.'/'.$data->bab_slug);
+        return redirect('tugas/'.$data->kelas_slug.'/'.$data->mapel_slug.'/'.$data->bab_slug);
     }
     public function deleteTugas($id)
     {
         $data = Tugas::where('id',$id)->firstOrfail();
         $data->delete();
-        return redirect('tugas/'.$data->mapel_slug.'/'.$data->bab_slug);
+        return redirect('tugas/'.$data->kelas_slug.'/'.$data->mapel_slug.'/'.$data->bab_slug);
     }
-    public function editTugas($mapel,$bab,$slug)
+    public function editTugas($kelas,$mapel,$bab,$slug)
     {
-        $data = Tugas::where('mapel_slug',$mapel)->where('bab_slug',$bab)->where('slug',$slug)->firstOrfail();
+        $data = Tugas::where('kelas_slug',$kelas)->where('mapel_slug',$mapel)->where('bab_slug',$bab)->where('slug',$slug)->firstOrfail();
+
+        // keamanan
+        $slugFail = Bab::where('slug',$bab)->firstOrfail();
+        $secure = Mapel::where('slug',$mapel)->firstOrfail();
+
+        if(auth()->user()->level == 2 && auth()->user()->name == $secure->guru){
+            return view('tugas.editTugas',compact('data'));
+        }else{
+            return view('errors.404');
+        }
         return view('tugas.editTugas',compact('data'));
     }
     public function updateTugas(Request $request)
@@ -58,7 +94,8 @@ class TugasController extends Controller
         $data->slug = Str::slug($request->nama_tugas);;
         $data->isi = $request->isi;
         $data->mapel_slug = $request->mapel_slug;
+        $data->kelas_slug = $request->kelas_slug;
         $data->save();
-        return redirect('tugas/'.$data->mapel_slug.'/'.$data->bab_slug);
+        return redirect('tugas/'.$data->kelas_slug.'/'.$data->mapel_slug.'/'.$data->bab_slug);
     }
 }
