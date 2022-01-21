@@ -27,7 +27,7 @@ class TugasController extends Controller
 
         if(auth()->user()->level == 2 && auth()->user()->name == $secure->guru){
             return view('tugas',compact('data','kelas','mapel','bab'));
-        }elseif(auth()->user()->level == 1){
+        }elseif(auth()->user()->level != 2){
             return view('tugas',compact('data','kelas','mapel','bab'));
         }else{
             return view('errors.404');
@@ -46,11 +46,11 @@ class TugasController extends Controller
 
         if(auth()->user()->level == 2 && auth()->user()->name == $secure->guru){
             return view('tugas.addTugas',compact('bab','mapel','kelas'));
+        }elseif(auth()->user()->level == 3){
+            return view('tugas.addTugas',compact('bab','mapel','kelas'));
         }else{
             return view('errors.404');
         }
-    
-        return view('tugas.addTugas',compact('bab','mapel','kelas'));
     }
     public function saveTugas(Request $request)
     {
@@ -59,7 +59,6 @@ class TugasController extends Controller
         $data->isi = $request->isi;
         $data->slug = Str::slug($request->nama_tugas);
         $data->bab_slug = $request->bab_slug;
-        $data->nilai = $request->nilai;
         $data->mapel_slug = $request->mapel_slug;
         $data->kelas_slug = $request->kelas_slug;
         $data->save();
@@ -81,10 +80,11 @@ class TugasController extends Controller
 
         if(auth()->user()->level == 2 && auth()->user()->name == $secure->guru){
             return view('tugas.editTugas',compact('data'));
+        }elseif(auth()->user()->level == 3){
+            return view('tugas.editTugas',compact('data'));
         }else{
             return view('errors.404');
         }
-        return view('tugas.editTugas',compact('data'));
     }
     public function updateTugas(Request $request)
     {

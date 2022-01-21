@@ -13,7 +13,7 @@
         </div>
         <!-- /.card-header -->
         <!-- form start -->
-        <form role="form" action="/mapel/saveMapel" method="POST">
+        <form role="form" action="/saveMapel" method="POST">
             @csrf
           <div class="card-body">
             <div class="form-group">
@@ -23,7 +23,8 @@
             <div class="form-group">
                 <label for="nama_mapel">Nama Guru</label>
                 <input type="text" class="form-control" id="nama_guru" placeholder="Enter name" name="nama_guru">
-              </div>
+            </div>
+            <input type="hidden" value="{{$kelas}}" name="kelas_slug" id="kelas_slug">
           </div>
           <!-- /.card-body -->
     

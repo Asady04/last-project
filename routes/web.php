@@ -35,10 +35,15 @@ Route::get('bab/{kelas}/{mapel}',$url. "\BabController@showBab");
 Route::get('tugas/{kelas}/{mapel}/{bab}',$url. "\TugasController@showTugas");
 
 Route::group(['middleware' => ['ceklevel:3']],function(){
+    // Admin
+Route::get('/admin', "App\Http\Controllers\KelasController@showAdmin");
+Route::get('/admin/{kelas}', "App\Http\Controllers\KelasController@adminMapel");
+
     // Mapel
-Route::get('mapel/addMapel', "App\Http\Controllers\MapelController@addMapel");
-Route::post('mapel/saveMapel', "App\Http\Controllers\MapelController@saveMapel");
-Route::get('deleteMapel/{id}',"App\Http\Controllers\MapelController@deleteMapel");
+Route::get('/addMapel/{kelas}', "App\Http\Controllers\MapelController@addMapel");
+Route::post('/saveMapel', "App\Http\Controllers\MapelController@saveMapel");
+Route::get('/deleteMapel/{id}',"App\Http\Controllers\MapelController@deleteMapel");
+
 });
 
 Route::group(['middleware' => ['ceklevel:2,3']],function(){

@@ -24,7 +24,6 @@
               <label for="nama_tugas">Isi</label>
               <textarea type="text" class="form-control" id="isi" placeholder="Enter name" name="isi"></textarea>
             </div>
-            <input type="hidden" value="0" name="nilai" id="nilai">
             <input type="hidden" value="{{$bab}}" name="bab_slug" id="bab_slug">
             <input type="hidden" value="{{$mapel}}" name="mapel_slug" id="mapel_slug">
             <input type="hidden" value="{{$kelas}}" name="kelas_slug" id="kelas_slug">

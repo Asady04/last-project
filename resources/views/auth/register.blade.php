@@ -38,7 +38,8 @@
                                 @enderror
                             </div>
                         </div>
-                        <input type="hidden" value="1" id="level">
+                        <input type="hidden" value="1" name="level" id="level" required autocomplete="level">
+                        <input type="hidden" value="2" name="nomor" id="nomor" required autocomplete="nomor">
                         <div class="form-group row">
                             <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password') }}</label>
 

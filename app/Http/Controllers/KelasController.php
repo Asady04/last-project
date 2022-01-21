@@ -30,7 +30,8 @@ class KelasController extends Controller
             $user = 'guru';
         }
         if(auth()->user()->level==3){
-            $slugs = 'x-tkj';
+            $user = 'admin';
+            $slugs = '';
         }
         // return view('bab',compact('slugs'));
         return redirect($user.'/'.$slugs);
@@ -62,6 +63,20 @@ class KelasController extends Controller
         }else{
             return view('errors.404');
         }
+    }
+    
+    // Admin
+    public function showAdmin()
+    {
+        $kelas = Kelas::get();
+        return view('kelas',compact('kelas'));  
+    }
+
+    public function adminMapel($kelas)
+    {
+        $kelas = $kelas;
+        $data = Mapel::where('kelas_slug',$kelas)->get();
+        return view('mapel',compact('kelas','data'));
     }
 
     public function logout()

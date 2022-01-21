@@ -25,10 +25,10 @@ class BabController extends Controller
         $secure = Mapel::where('slug',$mapel)->firstOrfail();
         if(auth()->user()->level == 2 && auth()->user()->name == $secure->guru){
             return view('bab',compact('data','mapel','kelas'));
-        }elseif(auth()->user()->level == 1){
+        }elseif(auth()->user()->level != 2){
             return view('bab',compact('data','mapel','kelas'));
         }else{
-            return view('errors.404');
+            return view ('errors.404');
         }
     }
     public function addBab($kelas,$mapel)
@@ -41,10 +41,12 @@ class BabController extends Controller
 
         if(auth()->user()->level == 2 && auth()->user()->name == $secure->guru){
             return view('bab.addBab',compact('kelas','mapel'));
+        }elseif(auth()->user()->level == 3){
+            return view('bab.addBab',compact('kelas','mapel'));
         }else{
-            return view('errors.404');
+            return view ('errors.404');
         }
-        return view('bab.addBab',compact('kelas','mapel'));
+        
     }
     public function saveBab(Request $request)
     {
@@ -66,18 +68,24 @@ class BabController extends Controller
 
         if(auth()->user()->level == 2 && auth()->user()->name == $secure->guru){
             return view('bab.editBab',compact('data'));
+        }elseif(auth()->user()->level == 3){
+            return view('bab.editBab',compact('data'));
         }else{
-            return view('errors.404');
+            return view ('errors.404');
         }
-        return view('bab.editBab',compact('data'));
     }
     public function updateBab(Request $request)
     {
         $data = Bab::where('id',$request->id)->first();
+        $tugas = Tugas::where('kelas_slug',$data->kelas_slug)->where('mapel_slug',$data->mapel_slug)->where('bab_slug',$data->slug)->get();
+        foreach ($tugas as $item){
+            $item->bab_slug = Str::slug($request->nama_bab);
+            $item->save();
+          }
         $data->nama = $request->nama_bab;
         $data->mapel_slug = $request->mapel_slug;
         $data->kelas_slug = $request->kelas_slug;
-        $data->slug = Str::slug($request->nama_bab);;
+        $data->slug = Str::slug($request->nama_bab);
         $data->topik = $request->topik;
         $data->save();
         return redirect('/bab'.'/'.$data->kelas_slug.'/'.$data->mapel_slug);
