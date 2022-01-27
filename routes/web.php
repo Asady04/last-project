@@ -41,8 +41,13 @@ Route::get('/admin/{kelas}', "App\Http\Controllers\KelasController@adminMapel");
 
     // Mapel
 Route::get('/addMapel/{kelas}', "App\Http\Controllers\MapelController@addMapel");
+Route::get('/editMapel/{kelas}/{mapel}', "App\Http\Controllers\MapelController@editMapel");
+Route::post('/updateMapel/{kelas}/{mapel}', "App\Http\Controllers\MapelController@updateMapel");
 Route::post('/saveMapel', "App\Http\Controllers\MapelController@saveMapel");
 Route::get('/deleteMapel/{id}',"App\Http\Controllers\MapelController@deleteMapel");
+
+Route::get('/register',"App\Http\Controllers\Auth\RegisterController@showRegistrationForm");
+Route::post('/register/user',"App\Http\Controllers\Auth\RegisterController@register");
 
 });
 

@@ -76,7 +76,7 @@ class BabController extends Controller
     }
     public function updateBab(Request $request)
     {
-        $data = Bab::where('id',$request->id)->first();
+        $data = Bab::where('id',$request->id)->firstOrfail();
         $tugas = Tugas::where('kelas_slug',$data->kelas_slug)->where('mapel_slug',$data->mapel_slug)->where('bab_slug',$data->slug)->get();
         foreach ($tugas as $item){
             $item->bab_slug = Str::slug($request->nama_bab);

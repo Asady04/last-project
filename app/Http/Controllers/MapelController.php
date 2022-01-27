@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Mapel;
 use App\Models\Kelas;
+use App\Models\Bab;
+use App\Models\Tugas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -34,13 +36,43 @@ class MapelController extends Controller
     public function saveMapel(Request $request)
     {
         $data = new Mapel;
+        
         $data->nama = $request->nama_mapel;
         $data->slug = Str::slug($request->nama_mapel);
         $data->guru = $request->nama_guru;
         $data->kelas_slug = $request->kelas_slug;
         $data->save();
-        return redirect('/admin'.$data->kelas_slug);
+        return redirect('/admin'.'/'.$data->kelas_slug);
     }
+
+    public function editMapel($kelas,$mapel)
+    {
+        $data = Mapel::where('kelas_slug',$kelas)->where('slug',$mapel)->firstOrfail();
+        
+          return view('mapel.editMapel',compact('data'));
+    }
+
+    public function updateMapel(Request $request)
+    {
+        $data = Mapel::where('id',$request->id)->firstOrfail();
+        $bab = Bab::where('kelas_slug',$data->kelas_slug)->where('mapel_slug',$data->slug)->get();
+        $tugas = Tugas::where('kelas_slug',$data->kelas_slug)->where('mapel_slug',$data->slug)->get();
+        foreach ($bab as $item){
+            $item->mapel_slug = Str::slug($request->nama_mapel);
+            $item->save();
+          }
+        foreach ($tugas as $item){
+            $item->mapel_slug = Str::slug($request->nama_mapel);
+            $item->save();
+          }
+          $data->nama = $request->nama_mapel;
+          $data->kelas_slug = $data->kelas_slug;
+          $data->slug = Str::slug($request->nama_mapel);
+          $data->guru = $request->guru;
+          $data->save();
+          return redirect('/admin'.'/'.$data->kelas_slug);
+    }
+
     public function deleteMapel($id)
     {
         $data = Mapel::where('id',$id)->first();

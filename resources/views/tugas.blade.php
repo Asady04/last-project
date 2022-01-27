@@ -34,7 +34,7 @@
     <div>
         <div>{{$item->nama}}</div>
         <div>{{$item->isi}}</div>
-
+        <div><input type="file"></div>
     @if (auth()->user()->level>1)
         <a href="/deleteTugas/{{ $item->id }}"><button class="btn">Delete</button></a>
         <a href="/editTugas/{{$item->kelas_slug}}/{{ $item->mapel_slug }}/{{ $item->bab_slug }}/{{ $item->slug }}"><button class="btn">Edit</button></a>

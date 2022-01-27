@@ -12,6 +12,7 @@
         <a href="/bab/{{$item->kelas_slug}}/{{$item->slug}}">{{$item->nama}}</a>
         @if (auth()->user()->level==3)
         <a href="/deleteMapel/{{ $item->id }}"><button class="btn btn-danger">Delete</button></a>
+        <a href="/editMapel/{{ $item->kelas_slug }}/{{ $item->slug }}"><button class="btn btn-danger">edit</button></a>
         @else
         <div></div>
         @endif
