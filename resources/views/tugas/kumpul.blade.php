@@ -7,6 +7,9 @@
     <title>Document</title>
 </head>
 <body>
-   <div>Lu mau kemana si</div>
+    @foreach ($data as $item)
+    <div>{{$item->nama}}</div>
+    <img src="{{asset('storage/tugas/'.$item->gambar)}}" width=10%>
+    @endforeach
 </body>
 </html>

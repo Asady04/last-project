@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Bab;
-use App\Models\Mapel;
-use App\Models\Tugas;
+use App\Models\{Kelas,Mapel,Bab,Tugas,Kumpul};
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -94,6 +92,7 @@ class BabController extends Controller
     {
         $data = Bab::where('id',$id)->first();
         DB::table('tugas')->where('kelas_slug',$data->kelas_slug)->where('mapel_slug',$data->mapel_slug)->where('bab_slug',$data->slug)->delete();
+        DB::table('kumpul')->where('kelas_slug',$data->kelas_slug)->where('mapel_slug',$data->mapel_slug)->where('bab_slug',$data->slug)->delete();
         $data->delete();
         return redirect('/bab'.'/'.$data->kelas_slug.'/'.$data->mapel_slug);
     }

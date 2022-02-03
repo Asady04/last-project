@@ -7,5 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Kumpul extends Model
 {
+    protected $table = "kumpul";
     use HasFactory;
 }

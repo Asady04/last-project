@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Kelas;
-use App\Models\User;
-use App\Models\Mapel;
+use App\Models\{Kelas,User,Mapel};
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -34,7 +32,7 @@ class KelasController extends Controller
             $slugs = '';
         }
         // return view('bab',compact('slugs'));
-        return redirect($user.'/'.$slugs);
+        return redirect('/'.$user.'/'.$slugs);
     }
 
     // guru->kelas

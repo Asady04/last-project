@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Tugas;
-use App\Models\Bab;
-use App\Models\Mapel;
+use App\Models\{Kelas,Mapel,Bab,Tugas,Kumpul};
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -17,6 +15,7 @@ class TugasController extends Controller
     public function showTugas($kelas,$mapel,$bab)
     {
         $data = Tugas::where('kelas_slug',$kelas)->where('mapel_slug',$mapel)->where('bab_slug',$bab)->get();
+        $kumpul = Kumpul::where('kelas_slug',$kelas)->where('mapel_slug',$mapel)->where('bab_slug',$bab)->get();
         $kelas = $kelas;
         $mapel = $mapel;
         $bab = $bab;
@@ -26,9 +25,9 @@ class TugasController extends Controller
         $secure = Mapel::where('slug',$mapel)->firstOrfail();
 
         if(auth()->user()->level == 2 && auth()->user()->name == $secure->guru){
-            return view('tugas',compact('data','kelas','mapel','bab'));
+            return view('tugas',compact('data','kelas','mapel','bab','kumpul'));
         }elseif(auth()->user()->level != 2){
-            return view('tugas',compact('data','kelas','mapel','bab'));
+            return view('tugas',compact('data','kelas','mapel','bab','kumpul'));
         }else{
             return view('errors.404');
         }
@@ -75,7 +74,6 @@ class TugasController extends Controller
         $data = Tugas::where('kelas_slug',$kelas)->where('mapel_slug',$mapel)->where('bab_slug',$bab)->where('slug',$slug)->firstOrfail();
 
         // keamanan
-        $slugFail = Bab::where('slug',$bab)->firstOrfail();
         $secure = Mapel::where('slug',$mapel)->firstOrfail();
 
         if(auth()->user()->level == 2 && auth()->user()->name == $secure->guru){
@@ -97,5 +95,37 @@ class TugasController extends Controller
         $data->kelas_slug = $request->kelas_slug;
         $data->save();
         return redirect('tugas/'.$data->kelas_slug.'/'.$data->mapel_slug.'/'.$data->bab_slug);
+    }
+
+    public function uploadTugas(Request $request,$kelas,$mapel,$bab,$tugas)
+    {
+        $file_name = $request->image->getClientOriginalName();
+        $request->image->storeAs('tugas',$file_name);
+        $data = new Kumpul;
+        $data->nama = auth()->user()->name;
+        $data->nilai = 0;
+        $data->kelas_slug = $kelas;
+        $data->mapel_slug = $mapel;
+        $data->bab_slug = $bab;
+        $data->tugas_slug = $tugas;
+        $data->gambar = $file_name;
+        $data->save();
+
+        return redirect('tugas/'.$data->kelas_slug.'/'.$data->mapel_slug.'/'.$data->bab_slug);
+    }
+
+    public function showKumpul($kelas,$mapel,$bab,$tugas)
+    {
+        $data = Kumpul::where('kelas_slug',$kelas)->where('mapel_slug',$mapel)->where('bab_slug',$bab)->where('tugas_slug',$tugas)->get();
+
+        $secure = Mapel::where('slug',$mapel)->where('kelas_slug',$kelas)->firstOrfail();
+
+        if(auth()->user()->level == 2 && auth()->user()->name == $secure->guru){
+            return view('tugas.kumpul',compact('data'));
+        }elseif(auth()->user()->level == 3){
+            return view('tugas.kumpul',compact('data'));
+        }else{
+            return view('errors.404');
+        }
     }
 }

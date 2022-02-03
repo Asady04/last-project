@@ -19,9 +19,13 @@ $url = "App\http\Controllers";
 // });
 
 Auth::routes();
-Route::get('/logout',"App\Http\Controllers\KelasController@logout");
 
-Route::get('/',$url. "\KelasController@userProgress");
+Route::get('/logout',"App\Http\Controllers\KelasController@logout");
+Route::post('/logout/user',"App\Http\Controllers\Auth\LoginController@logout");
+Route::get('/',"App\Http\Controllers\Auth\LoginController@showLoginForm");
+Route::post('/login',"App\Http\Controllers\Auth\LoginController@login");
+
+Route::get('/userProgress',$url. "\KelasController@userProgress");
 // Route::get('/',$url. "\MapelController@showMapel");
 
 
@@ -33,6 +37,9 @@ Route::get('bab/{kelas}/{mapel}',$url. "\BabController@showBab");
 
 // Tugas
 Route::get('tugas/{kelas}/{mapel}/{bab}',$url. "\TugasController@showTugas");
+Route::post('/upload/{kelas}/{mapel}/{bab}/{slug}',$url. "\TugasController@uploadTugas");
+
+
 
 Route::group(['middleware' => ['ceklevel:3']],function(){
     // Admin
@@ -66,6 +73,7 @@ Route::post('/saveTugas/{kelas}/{mapel}/{bab}', "App\Http\Controllers\TugasContr
 Route::get('/deleteTugas/{id}',"App\Http\Controllers\TugasController@deleteTugas");
 Route::get('/editTugas/{kelas}/{mapel}/{bab}/{slug}',"App\Http\Controllers\TugasController@editTugas");
 Route::post('/updateTugas/{kelas}/{mapel}/{bab}/{slug}',"App\Http\Controllers\TugasController@updateTugas");
+Route::get('/showTugas/{kelas}/{mapel}/{bab}/{slug}',"App\Http\Controllers\TugasController@showKumpul");
 
     // Guru
 Route::get('/guru/{guru}',"App\Http\Controllers\KelasController@showKelas");

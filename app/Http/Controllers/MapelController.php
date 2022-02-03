@@ -2,10 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Mapel;
-use App\Models\Kelas;
-use App\Models\Bab;
-use App\Models\Tugas;
+use App\Models\{Kelas,Mapel,Bab,Tugas,Kumpul};
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -78,6 +75,7 @@ class MapelController extends Controller
         $data = Mapel::where('id',$id)->first();
         DB::table('bab')->where('kelas_slug',$data->kelas_slug)->where('mapel_slug',$data->slug)->delete();
         DB::table('tugas')->where('kelas_slug',$data->kelas_slug)->where('mapel_slug',$data->slug)->delete();
+        DB::table('kumpul')->where('kelas_slug',$data->kelas_slug)->where('mapel_slug',$data->slug)->delete();
         $data->delete();
         return redirect('/admin'.'/'.$data->kelas_slug);
     }
