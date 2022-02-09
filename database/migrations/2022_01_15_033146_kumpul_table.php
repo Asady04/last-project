@@ -33,6 +33,6 @@ class KumpulTable extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('kumpul');
     }
 }
