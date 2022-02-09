@@ -16,9 +16,11 @@ class CreateTugasTable extends Migration
         Schema::create('tugas', function (Blueprint $table) {
             $table->id();
             $table->string('nama',255);
-            $table->string('nilai',3);
+            $table->string('kelas_slug',255);
+            $table->string('mapel_slug',255);
             $table->string('bab_slug',255);
             $table->string('slug',255);
+            $table->string('isi',255);
             $table->timestamps();
         });
     }

@@ -16,8 +16,10 @@ class CreateBabTable extends Migration
         Schema::create('bab', function (Blueprint $table) {
             $table->id();
             $table->string('nama',255);
+            $table->string('kelas_slug',255);
             $table->string('mapel_slug',255);
             $table->string('slug',255);
+            $table->string('topik',255);
             $table->timestamps();
         });
     }

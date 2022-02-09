@@ -16,9 +16,12 @@ class KumpulTable extends Migration
         Schema::create('kumpul', function (Blueprint $table) {
             $table->id();
             $table->string('nama',255);
-            $table->string('email')->unique();
             $table->string('nilai',255);
+            $table->string('kelas_slug',255);
+            $table->string('mapel_slug',255);
+            $table->string('bab_slug',255);
             $table->string('tugas_slug',255);
+            $table->string('gambar',255);
             $table->timestamps();
         });
     }
