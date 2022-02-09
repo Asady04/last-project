@@ -32,7 +32,7 @@ Route::post('/register/user',[UserController::class, 'register']);
 Route::get('murid/{kelas}',[MapelController::class, 'showMapel']);
 Route::get('bab/{kelas}/{mapel}',[BabController::class, 'showBab']);
 Route::get('tugas/{kelas}/{mapel}/{bab}',[TugasController::class, 'showTugas']);
-Route::get('kelas',[KelasController::class, 'showKelas']);
+Route::get('/kelas',[KelasController::class, 'showKelas']);
 Route::get('/userProgress',[KelasController::class, 'userProgress']);
 
 Route::get('/admin', "App\Http\Controllers\KelasController@showAdmin");
