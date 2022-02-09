@@ -8,66 +8,75 @@ use Illuminate\Support\Str;
 
 class TugasController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
+    // public function __construct()
+    // {
+    //     $this->middleware('auth');
+    // }
     public function showTugas($kelas,$mapel,$bab)
     {
         $data = Tugas::where('kelas_slug',$kelas)->where('mapel_slug',$mapel)->where('bab_slug',$bab)->get();
-        $kumpul = Kumpul::where('kelas_slug',$kelas)->where('mapel_slug',$mapel)->where('bab_slug',$bab)->get();
+        // $kumpul = Kumpul::where('kelas_slug',$kelas)->where('mapel_slug',$mapel)->where('bab_slug',$bab)->get();
         $kelas = $kelas;
         $mapel = $mapel;
         $bab = $bab;
 
         // keamanan
-        $slugFail = Bab::where('slug',$bab)->firstOrfail();
-        $secure = Mapel::where('slug',$mapel)->firstOrfail();
+        // $slugFail = Bab::where('slug',$bab)->firstOrfail();
+        // $secure = Mapel::where('slug',$mapel)->firstOrfail();
 
-        if(auth()->user()->level == 2 && auth()->user()->name == $secure->guru){
-            return view('tugas',compact('data','kelas','mapel','bab','kumpul'));
-        }elseif(auth()->user()->level != 2){
-            return view('tugas',compact('data','kelas','mapel','bab','kumpul'));
-        }else{
-            return view('errors.404');
-        }
-        
+        // if(auth()->user()->level == 2 && auth()->user()->name == $secure->guru){
+        //     return view('tugas',compact('data','kelas','mapel','bab','kumpul'));
+        // }elseif(auth()->user()->level != 2){
+        //     return view('tugas',compact('data','kelas','mapel','bab','kumpul'));
+        // }else{
+        //     return view('errors.404');
+        // }
+        return response()->json([
+            'status' => 'berhasil',
+            'data' => $data,
+        ]);
     }
-    public function addTugas($kelas,$mapel,$bab)
-    {
-        $bab = $bab;
-        $mapel = $mapel;
-        $kelas = $kelas;
+    // public function addTugas($kelas,$mapel,$bab)
+    // {
+    //     $bab = $bab;
+    //     $mapel = $mapel;
+    //     $kelas = $kelas;
 
-        // keamanan
-        $slugFail = Bab::where('slug',$bab)->firstOrfail();
-        $secure = Mapel::where('slug',$mapel)->firstOrfail();
+    //     // keamanan
+    //     $slugFail = Bab::where('slug',$bab)->firstOrfail();
+    //     $secure = Mapel::where('slug',$mapel)->firstOrfail();
 
-        if(auth()->user()->level == 2 && auth()->user()->name == $secure->guru){
-            return view('tugas.addTugas',compact('bab','mapel','kelas'));
-        }elseif(auth()->user()->level == 3){
-            return view('tugas.addTugas',compact('bab','mapel','kelas'));
-        }else{
-            return view('errors.404');
-        }
-    }
+    //     if(auth()->user()->level == 2 && auth()->user()->name == $secure->guru){
+    //         return view('tugas.addTugas',compact('bab','mapel','kelas'));
+    //     }elseif(auth()->user()->level == 3){
+    //         return view('tugas.addTugas',compact('bab','mapel','kelas'));
+    //     }else{
+    //         return view('errors.404');
+    //     }
+    // }
     public function saveTugas(Request $request)
     {
         $data = new Tugas;
-        $data->nama = $request->nama_tugas;
+        $data->nama = $request->nama;
         $data->isi = $request->isi;
-        $data->slug = Str::slug($request->nama_tugas);
+        $data->slug = Str::slug($request->nama);
         $data->bab_slug = $request->bab_slug;
         $data->mapel_slug = $request->mapel_slug;
         $data->kelas_slug = $request->kelas_slug;
         $data->save();
-        return redirect('tugas/'.$data->kelas_slug.'/'.$data->mapel_slug.'/'.$data->bab_slug);
+        return response()->json([
+            'status' => 'berhasil',
+            'data' => $data,
+        ],200);
     }
     public function deleteTugas($id)
     {
         $data = Tugas::where('id',$id)->firstOrfail();
         $data->delete();
-        return redirect('tugas/'.$data->kelas_slug.'/'.$data->mapel_slug.'/'.$data->bab_slug);
+        return response()->json([
+            'status' => 'berhasil',
+            'data' => $data,
+        ],200);
     }
     public function editTugas($kelas,$mapel,$bab,$slug)
     {
@@ -87,14 +96,17 @@ class TugasController extends Controller
     public function updateTugas(Request $request)
     {
         $data = Tugas::where('id',$request->id)->firstOrfail();
-        $data->nama = $request->nama_tugas;
+        $data->nama = $request->nama;
         $data->bab_slug = $request->bab_slug;
-        $data->slug = Str::slug($request->nama_tugas);;
+        $data->slug = Str::slug($request->nama);;
         $data->isi = $request->isi;
         $data->mapel_slug = $request->mapel_slug;
         $data->kelas_slug = $request->kelas_slug;
         $data->save();
-        return redirect('tugas/'.$data->kelas_slug.'/'.$data->mapel_slug.'/'.$data->bab_slug);
+        return response()->json([
+            'status' => 'berhasil',
+            'data' => $data,
+        ],200);
     }
 
     public function uploadTugas(Request $request,$kelas,$mapel,$bab,$tugas)
@@ -111,7 +123,10 @@ class TugasController extends Controller
         $data->gambar = $file_name;
         $data->save();
 
-        return redirect('tugas/'.$data->kelas_slug.'/'.$data->mapel_slug.'/'.$data->bab_slug);
+        return response()->json([
+            'status' => 'berhasil',
+            'data' => $data,
+        ],200);;
     }
 
     public function showKumpul($kelas,$mapel,$bab,$tugas)

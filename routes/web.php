@@ -77,5 +77,5 @@ Route::get('/showTugas/{kelas}/{mapel}/{bab}/{slug}',"App\Http\Controllers\Tugas
 
     // Guru
 Route::get('/guru/{guru}',"App\Http\Controllers\KelasController@showKelas");
-Route::get('/guru/{guru}/{kelas}',"App\Http\Controllers\KelasController@showMapel");
+// Route::get('/guru/{guru}/{kelas}',"App\Http\Controllers\KelasController@showMapel");
 });
