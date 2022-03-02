@@ -12,7 +12,7 @@ class AuthController extends Controller
 {
     public function showUser()
     {
-        User::get();
+        $data = User::get();
 
         return response()->json([
             'status' => 'berhasil',
