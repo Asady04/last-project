@@ -57,6 +57,53 @@ class AuthController extends Controller
         
     }
 
+    public function registerAdmin(Request $request)
+    {
+        $rules = array(
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|unique:users,email',
+            'password' => 'required|string|min:6|confirmed',
+            // 'role' => 'required|max:1',
+        );
+
+        $cek = Validator::make($request->all(),$rules);
+
+        if($cek->fails()){
+            $errorString = implode(",",$cek->messages()->all());
+            return response()->json([
+                'message' => $errorString,
+            ],401);
+        }else{
+            $user = User::create([
+                'name' => $request->name,
+                'password' => bcrypt($request->password),
+                'email' => $request->email, 
+            ]);
+
+        if ($user) {
+            $user->assignRole('admin');
+            $role = "admin";
+        }else {
+            return response()->json([
+                'status' => 'Failed',
+                'message' => 'Gagal',
+            ],422);
+        }
+
+        $token = $user->createToken('token-name')->plainTextToken;
+
+        return response()->json([
+            'status' => 'Success',
+            'message' => 'Berhasil membuat akun',
+            'role' => $role,
+            'user' => $user,
+            'token' => $token,
+        ],200);
+        }
+
+        
+    }
+
     public function login(Request $request)
     {
         $rules = array(

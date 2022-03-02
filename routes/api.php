@@ -26,6 +26,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 // Register
 Route::post('/register', [AuthController::class, 'register']);
+Route::post('/admindattebayobikinregisterpokoknya', [AuthController::class, 'registerAdmin']);
 
 // Login
 Route::post('/login',[AuthController::class, 'login']);
