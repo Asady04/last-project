@@ -10,6 +10,16 @@ use Hash;
 
 class AuthController extends Controller
 {
+    public function showUser()
+    {
+        User::get();
+
+        return response()->json([
+            'status' => 'berhasil',
+            'data' => $data,
+        ]);
+    }
+
     public function register(Request $request)
     {
         $rules = array(
