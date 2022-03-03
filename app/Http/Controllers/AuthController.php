@@ -114,6 +114,7 @@ class AuthController extends Controller
         
     }
 
+    
     public function login(Request $request)
     {
         $rules = array(
@@ -147,6 +148,39 @@ class AuthController extends Controller
                 'role' => $roles,
                 'token' => $token,
             ],200);
+        }
+    }
+
+    public function editPassword(Request $request)
+    {
+        $rules = array(
+            'old_password' => 'required|string|min:6',
+            'new_password' => 'required|string|min:6|confirmed'
+        );
+
+        $cek = Validator::make($request->all(),$rules);
+
+        if($cek->fails()){
+            $errorString = implode(",",$cek->messages()->all());
+            return response()->json([
+                'message' => $errorString,
+            ],401);
+        }else{
+            $user = User::where('email',$request->email)->first();
+
+            if(!$user || !Hash::check($request->old_password, $user->password)){
+                return response()->json([
+                    'message' => 'Password salah',
+                ],401);
+            }else{
+                $user->password = $request->new_password;
+                $user->save();
+
+                return response()->json([
+                    'status' => 'Success',
+                    'message' => 'Berhasil ganti password',
+                ],200);
+            }
         }
     }
 }
