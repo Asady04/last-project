@@ -23,13 +23,16 @@ class JawabanController extends Controller
     {
         $data = new Jawaban;
 
+            $image  = $request->file('gambar');
+            $result = CloudinaryStorage::upload($image->getRealPath(), $image->getClientOriginalName());
+
             $data->judul = $request->judul;
             $data->idKursus = $request->idKursus;
             $data->idBab = $request->idBab;
             $data->idMateri = $request->idMateri;
             $data->komen = $request->komen;
             $data->nilai = $request->nilai;
-            $data->gambar = $request->gambar;
+            $data->gambar = $result;
             $data->namauser = $request->namauser;
             $data->save();
 
@@ -42,6 +45,10 @@ class JawabanController extends Controller
     public function updateJawaban(Request $request)
     {
         $data = Jawaban::where('id',$request->id)->first();
+
+            $file  = $request->file('gambar');
+            $image = $data->gambar;
+            $result = CloudinaryStorage::replace($image, $file->getRealPath(), $file->getClientOriginalName());
         
             $data->judul = $request->judul;
             $data->idKursus = $request->idKursus;
@@ -49,7 +56,7 @@ class JawabanController extends Controller
             $data->idMateri = $request->idMateri;
             $data->komen = $request->komen;
             $data->nilai = $request->nilai;
-            $data->gambar = $request->gambar;
+            $data->gambar = $result;
             $data->namauser = $request->namauser;
             $data->save();
 

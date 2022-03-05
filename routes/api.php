@@ -24,12 +24,12 @@ use App\Http\Controllers\{
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-// Register
+
+// Auth
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/admindattebayobikinregisterpokoknya', [AuthController::class, 'registerAdmin']);
-
-// Login
 Route::post('/login',[AuthController::class, 'login']);
+Route::post('/changePassword',[AuthController::class, 'editPassword']);
 
 // Kursus
 Route::get('/kursus',[KursusController::class, 'showKursus']);

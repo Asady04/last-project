@@ -22,11 +22,13 @@ class KursusController extends Controller
     public function saveKursus(Request $request)
     {
         $data = new Kursus;
-        // $file_name = $request->gambar->getClientOriginalName();
+        
+            $image  = $request->file('gambar');
+            $result = CloudinaryStorage::upload($image->getRealPath(), $image->getClientOriginalName());
 
             $data->judul = $request->judul;
-            $data->gambar = $request->gambar;
             $data->deskripsi = $request->deskripsi;
+            $data->gambar = $result;
             $data->save();
             return response()->json([
                 'status' => 'berhasil',
@@ -38,9 +40,12 @@ class KursusController extends Controller
     {
         $data = Kursus::where('id',$request->id)->first();
         // $file_name = $request->gambar->getClientOriginalName();
-        
+            $file  = $request->file('gambar');
+            $image = $data->gambar;
+            $result = CloudinaryStorage::replace($image, $file->getRealPath(), $file->getClientOriginalName());
+
             $data->judul = $request->judul;
-            $data->gambar = $request->gambar;
+            $data->gambar = $result;
             $data->deskripsi = $request->deskripsi;
             $data->save();
             return response()->json([
