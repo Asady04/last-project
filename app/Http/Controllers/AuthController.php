@@ -187,5 +187,15 @@ class AuthController extends Controller
             }
         }
     }
-}
 
+    public function deleteUser($id)
+    {
+        $data = User::where('id',$id)->first();
+        
+            $data->delete();
+
+            return response()->json([
+                'status' => 'berhasil',
+            ],200);
+    }
+}

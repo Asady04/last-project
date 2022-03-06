@@ -30,6 +30,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/admindattebayobikinregisterpokoknya', [AuthController::class, 'registerAdmin']);
 Route::post('/login',[AuthController::class, 'login']);
 Route::post('/changePassword',[AuthController::class, 'editPassword']);
+Route::post('/deleteUser/{id}',[AuthController::class, 'deleteUser']);
 
 // Kursus
 Route::get('/kursus',[KursusController::class, 'showKursus']);
