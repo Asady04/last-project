@@ -73,6 +73,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|unique:users,email',
             'password' => 'required|string|min:6|confirmed',
+            'gambar' => 'required|string',
             // 'role' => 'required|max:1',
         );
 
@@ -88,6 +89,7 @@ class AuthController extends Controller
                 'name' => $request->name,
                 'password' => bcrypt($request->password),
                 'email' => $request->email, 
+                'gambar' => $request->gambar,
             ]);
 
         if ($user) {
