@@ -21,7 +21,7 @@ class JawabanTable extends Migration
             $table->string('komen');
             $table->integer('nilai');
             $table->string('gambar');
-            $table->string('namauser');
+            $table->string('email');
             $table->timestamps();
         });
     }

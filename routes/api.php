@@ -25,6 +25,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::middleware(['auth:sanctum'])->group(function(){
+    Route::middleware(['role:admin'])->group(function(){
+        
+    });
+});
 // Auth
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/admindattebayobikinregisterpokoknya', [AuthController::class, 'registerAdmin']);
@@ -45,13 +50,14 @@ Route::post('/saveBab', [BabController::class, 'saveBab']);
 Route::get('/deleteBab/{id}',[BabController::class, 'deleteBab']);
 
 // Materi
-Route::get('/Materi/{idKursus}/{idBab}',[MateriController::class, 'showMateri']);
+Route::get('/materi/{idKursus}/{idBab}',[MateriController::class, 'showMateri']);
 Route::post('/updateMateri', [MateriController::class, 'updateMateri']);
 Route::post('/saveMateri', [MateriController::class, 'saveMateri']);
 Route::get('/deleteMateri/{id}',[MateriController::class, 'deleteMateri']);
 
 // Jawaban
-Route::get('/Jawaban/{idKursus}/{idBab}/{idMateri}',[JawabanController::class, 'showJawaban']);
+Route::get('/jawaban/{idKursus}/{idBab}/{idMateri}',[JawabanController::class, 'showJawaban']);
+Route::get('/jawaban//{idMateri}/{email}',[JawabanController::class, 'khususJawaban']);
 Route::post('/updateJawaban', [JawabanController::class, 'updateJawaban']);
 Route::post('/saveJawaban', [JawabanController::class, 'saveJawaban']);
 Route::get('/deleteJawaban/{id}',[JawabanController::class, 'deleteJawaban']);

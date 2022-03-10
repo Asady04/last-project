@@ -9,6 +9,16 @@ use Illuminate\Support\Facades\DB;
 
 class JawabanController extends Controller
 {
+    public function khususJawaban($id,$email)
+    {
+        $data = Jawaban::where('idMateri',$id)->where('email',$email)->first();
+
+        return response()->json([
+            'status' => 'berhasil',
+            'data' => $data,
+        ]);
+    }
+
     public function showJawaban($idKursus,$idBab,$idMateri)
     {
         $data = Jawaban::where('idKursus',$id)->where('idBab',$idBab)->where('idMateri',$idMateri)->get();
