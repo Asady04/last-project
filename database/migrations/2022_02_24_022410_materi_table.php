@@ -15,8 +15,8 @@ class MateriTable extends Migration
     {
         Schema::create('materi', function (Blueprint $table) {
             $table->id();
-            $table->integer('idKursus');
-            $table->integer('idBab');
+            $table->foreignId('kursus_id');
+            $table->foreignId('bab_id');
             $table->string('judul');
             $table->integer('tipe');
             $table->string('isi',10000);

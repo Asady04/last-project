@@ -11,7 +11,7 @@ class MateriController extends Controller
 {
     public function showMateri($idKursus,$idBab)
     {
-        $data = Materi::where('idKursus',$id)->where('idBab',$idBab)->get();
+        $data = Materi::where('kursus_id',$idKursus)->where('bab_id',$idBab)->get();
         
         return response()->json([
             'status' => 'berhasil',
@@ -25,7 +25,7 @@ class MateriController extends Controller
 
             $data->judul = $request->judul;
             $data->idKursus = $request->idKursus;
-            $data->idBab = $request->idBab;
+            $data->bab_id = $request->idBab;
             $data->judul = $request->judul;
             $data->tipe = $request->tipe;
             $data->isi = $request->isi;
@@ -42,8 +42,8 @@ class MateriController extends Controller
         $data = Materi::where('id',$request->id)->first();
         
             $data->judul = $request->judul;
-            $data->idKursus = $request->idKursus;
-            $data->idBab = $request->idBab;
+            $data->kursus_id = $request->idKursus;
+            $data->bab_id = $request->idBab;
             $data->judul = $request->judul;
             $data->tipe = $request->tipe;
             $data->isi = $request->isi;
@@ -58,7 +58,7 @@ class MateriController extends Controller
     public function deleteMateri($id)
     {
         $data = Materi::where('id',$id)->first();
-        DB::table('jawaban')->where('idKursus',$data->idKursus)->where('idBab',$data->idBab)->where('idMateri',$id)->delete();
+        DB::table('jawaban')->where('kursus_id',$data->idKursus)->where('bab_id',$data->idBab)->where('materi_id',$id)->delete();
         $data->delete();
 
         return response()->json([

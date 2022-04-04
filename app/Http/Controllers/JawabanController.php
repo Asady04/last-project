@@ -11,7 +11,7 @@ class JawabanController extends Controller
 {
     public function khususJawaban($id,$email)
     {
-        $data = Jawaban::where('idMateri',$id)->where('email',$email)->first();
+        $data = Jawaban::where('materi_id',$id)->where('email',$email)->first();
 
         return response()->json([
             'status' => 'berhasil',
@@ -21,7 +21,7 @@ class JawabanController extends Controller
 
     public function showJawaban($idKursus,$idBab,$idMateri)
     {
-        $data = Jawaban::where('idKursus',$id)->where('idBab',$idBab)->where('idMateri',$idMateri)->get();
+        $data = Jawaban::where('kursus_id',$idKursus)->where('bab_id',$idBab)->where('materi_id',$idMateri)->get();
         
         return response()->json([
             'status' => 'berhasil',
@@ -37,9 +37,9 @@ class JawabanController extends Controller
             $result = CloudinaryStorage::upload($image->getRealPath(), $image->getClientOriginalName());
 
             $data->judul = $request->judul;
-            $data->idKursus = $request->idKursus;
-            $data->idBab = $request->idBab;
-            $data->idMateri = $request->idMateri;
+            $data->kursus_id = $request->idKursus;
+            $data->bab_id = $request->idBab;
+            $data->materi_id = $request->idMateri;
             $data->komen = $request->komen;
             $data->nilai = $request->nilai;
             $data->gambar = $result;
@@ -61,9 +61,9 @@ class JawabanController extends Controller
             $result = CloudinaryStorage::replace($image, $file->getRealPath(), $file->getClientOriginalName());
         
             $data->judul = $request->judul;
-            $data->idKursus = $request->idKursus;
-            $data->idBab = $request->idBab;
-            $data->idMateri = $request->idMateri;
+            $data->kursus_id = $request->idKursus;
+            $data->bab_id = $request->idBab;
+            $data->materi_id = $request->idMateri;
             $data->komen = $request->komen;
             $data->nilai = $request->nilai;
             $data->gambar = $result;

@@ -15,9 +15,9 @@ class JawabanTable extends Migration
     {
         Schema::create('jawaban', function (Blueprint $table) {
             $table->id();
-            $table->integer('idKursus');
-            $table->integer('idBab');
-            $table->integer('idMateri');
+            $table->foreignId('kursus_id');
+            $table->foreignId('bab_id');
+            $table->foreignId('materi_id');
             $table->string('komen');
             $table->integer('nilai');
             $table->string('gambar');

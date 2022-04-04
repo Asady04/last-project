@@ -5,23 +5,24 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Bab extends Model
+class KursusAcc extends Model
 {
-    protected $table = "bab";
     use HasFactory;
 
+    protected $table = "kursusAcc";
     protected $fillable = [
         'kursus_id',
-        'judul',
+        'user_id',
     ];
+    use HasFactory;
 
-    public function materi()
+    public function user()
     {
-        return $this->hasMany(Materi::class);
+        return $this->belongsTo(User::class,'user_id');
     }
 
     public function kursus()
     {
-        return $this->belongsTo(Kursus::class,'kursus_id');
+        return $this->belongsTo(User::class,'kursus_id');
     }
 }

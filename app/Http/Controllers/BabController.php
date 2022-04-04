@@ -11,11 +11,17 @@ class BabController extends Controller
 {
     public function showBab($idKursus)
     {
-        $data = Bab::where('idKursus',$idKursus)->get();
-        
+        $data = Bab::where('kursus_id',$idKursus)->get();
+
+        foreach ($data as $item){
+            $res[] = [
+                'bab' => $item,
+                'materi' => $item->materi,
+            ];           
+        }
         return response()->json([
             'status' => 'berhasil',
-            'data' => $data,
+            'data' =>$res
         ]);
     }
 
@@ -25,7 +31,7 @@ class BabController extends Controller
         $file_name = $request->gambar->getClientOriginalName();
 
             $data->judul = $request->judul;
-            $data->idKursus = $request->idKursus;
+            $data->kursus_id = $request->idKursus;
             $data->save();
 
             return response()->json([
@@ -39,7 +45,7 @@ class BabController extends Controller
         $data = Bab::where('id',$request->id)->first();
         
             $data->judul = $request->judul;
-            $data->idKursus = $request->idKursus;
+            $data->kursus_id = $request->idKursus;
             $data->save();
 
             return response()->json([
@@ -51,8 +57,8 @@ class BabController extends Controller
     public function deleteBab($id)
     {
         $data = Bab::where('id',$id)->first();
-        DB::table('materi')->where('idKursus',$data->idKursus)->where('idBab',$id)->delete();
-        DB::table('jawaban')->where('idKursus',$data->idKursus)->where('idBab',$id)->delete();
+        DB::table('materi')->where('kursus_id',$data->idKursus)->where('bab_id',$id)->delete();
+        DB::table('jawaban')->where('kursus_id',$data->idKursus)->where('bab_id',$id)->delete();
         $data->delete();
 
         return response()->json([

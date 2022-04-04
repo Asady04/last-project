@@ -30,11 +30,18 @@ class KursusController extends Controller
             $data->judul = $request->judul;
             $data->deskripsi = $request->deskripsi;
             $data->gambar = $result;
-            $data->save();
-            return response()->json([
-                'status' => 'berhasil',
-                'data' => $data,
-            ],200);
+            $berhasil = $data->save();
+            if($berhasil){
+                return response()->json([
+                    'status' => 'berhasil',
+                    'data' => $data,
+                ],200);
+            }else{
+                return response()->json([
+                    'status' => 'gagal',
+                ]);
+            }
+           
     }
 
     public function updateKursus(Request $request)
@@ -58,9 +65,9 @@ class KursusController extends Controller
     public function deleteKursus($id)
     {
         $data = Kursus::where('id',$id)->first();
-        DB::table('bab')->where('idKursus',$data->id)->delete();
-        DB::table('materi')->where('idKursus',$data->id)->delete();
-        DB::table('jawaban')->where('idKursus',$data->id)->delete();
+        DB::table('bab')->where('kursus_id',$data->id)->delete();
+        DB::table('materi')->where('kursus_id',$data->id)->delete();
+        DB::table('jawaban')->where('kursus_id',$data->id)->delete();
         $data->delete();
         return response()->json([
             'status' => 'berhasil',

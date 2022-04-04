@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Kursus;
+use App\Models\KursusAcc;
+use App\Models\Bab;
 use Validator;
 use Hash;
 
@@ -18,6 +21,42 @@ class AuthController extends Controller
             'status' => 'berhasil',
             'data' => $data,
         ]);
+        
+    }
+
+    public function userAccess(Request $request)
+    {
+        $user = User::where('email',$request->email)->first();
+
+        if(count($user->kursusAcc)===0){
+            return response()->json([
+               'data' => null,
+            ]);
+        }else{
+            foreach ($user->kursusAcc as $item){
+                $res[] = [
+                    'kursus' => $data = Kursus::where('id',$item->kursus_id)->get(),    
+                ];
+                
+            }
+            return response()->json([
+                'status' => 'berhasil',
+                'res' => $res,
+            ]);
+        }
+    }
+
+    public function createAccess(Request $request)
+    {
+        $data = new KursusAcc;
+
+        $data->user_id = $request->user_id;
+        $data->kursus_id = $request->kursus_id;
+
+        return response()->json([
+            'status' => 'berhasil',
+            'data' => $data,
+        ],200);
     }
 
     public function register(Request $request)

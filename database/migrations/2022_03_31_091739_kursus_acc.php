@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class BabTable extends Migration
+class KursusAcc extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,10 @@ class BabTable extends Migration
      */
     public function up()
     {
-        Schema::create('bab', function (Blueprint $table) {
+        Schema::create('kursusAcc', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id');
             $table->foreignId('kursus_id');
-            $table->string('judul');
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ class BabTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('bab');
+        Schema::dropIfExists('kursusAcc');
     }
 }
