@@ -1,6 +1,5 @@
 import React from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import Kursus from "../kursus";
 import Navus from "./navbar";
 
 const Murid = () => {

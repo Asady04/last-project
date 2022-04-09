@@ -19,7 +19,6 @@ const Login = () => {
   const [email, setEmail] = React.useState([]);
   const [password, setPassword] = React.useState([]);
   const [showPassword, setShowPassword] = React.useState(false);
-  console.log("...............", urlLogin);
 
   const toggleShow = () => {
     setShowPassword(showPassword ? false : true);
@@ -33,12 +32,10 @@ const Login = () => {
       })
       .then(function (response) {
         const data = response;
-        console.log(data);
         localStorage.setItem("role", data.data.role);
         localStorage.setItem("token", data.data.token.token);
         localStorage.setItem("email", data.data.user.email);
         localStorage.setItem("name", data.data.user.name);
-        console.log(data)
 
         if (localStorage.getItem("role") === "admin") {
           localStorage.setItem('tabadmin', 0)

@@ -1,5 +1,6 @@
-import { useToast } from "@chakra-ui/react";
+import { Select, useToast } from "@chakra-ui/react";
 import {
+  CheckCircleIcon,
   PencilAltIcon,
   PlusCircleIcon,
   TrashIcon,
@@ -23,18 +24,26 @@ import DataTable from "react-data-table-component";
 import { act } from "react-dom/test-utils";
 import { QueryClient, useQuery, useQueryClient } from "react-query";
 import {
+  urlAccess,
+  urlCreateAccess,
+  urlDeleteAccess,
   urlDeleteUser,
+  urlKursus,
   urlRegister,
   urlRegisterAdmin,
   urlUser,
-} from "../../url";
+} from "../../../url";
 
 const UserAccount = () => {
   const [user, setUser] = React.useState();
   const [name, setName] = React.useState();
+  const [access, setAccess] = React.useState([]);
   const [id, setId] = React.useState();
+  const [courseid, setCourseid] = React.useState();
+  const [course, setCourse] = React.useState([]);
   const [email, setEmail] = React.useState();
   const [password, setPassword] = React.useState();
+  const [btn, setBtn] = React.useState(false);
   const [cpassword, setCpassword] = React.useState();
   const [action, setAction] = React.useState();
   const [modal, setModal] = React.useState();
@@ -54,18 +63,32 @@ const UserAccount = () => {
     {
       name: "Action",
       selector: (row) => (
-        <Button
-          color="red"
-          buttonType="link"
-          size="regular"
-          rounded={false}
-          block={false}
-          iconOnly={true}
-          ripple="dark"
-          onClick={(e) => handleDelete(e, row["id"])}
-        >
-          <TrashIcon className="h-8" />
-        </Button>
+        <div className="flex">
+          <Button
+            color="teal"
+            buttonType="link"
+            size="regular"
+            rounded={false}
+            block={false}
+            iconOnly={true}
+            ripple="dark"
+            onClick={(e) => accessHandle(e, row["id"], row["email"])}
+          >
+            <CheckCircleIcon className="h-8" />
+          </Button>
+          <Button
+            color="pink"
+            buttonType="link"
+            size="regular"
+            rounded={false}
+            block={false}
+            iconOnly={true}
+            ripple="dark"
+            onClick={(e) => deleteHandle(e, row["id"])}
+          >
+            <TrashIcon className="h-8" />
+          </Button>
+        </div>
       ),
     },
   ];
@@ -77,25 +100,84 @@ const UserAccount = () => {
     });
   };
 
-  const handleDelete = (e, id) => {
+  const getCourse = async () => {
+    await axios.get(urlKursus).then(function (response) {
+      const data = response;
+      setCourse(data.data.data);
+      setCourseid(data.data.data[0].id);
+    });
+  };
+
+  const courseAccess = async (email) => {
+    await axios
+      .post(urlAccess, {
+        email: email,
+      })
+      .then(function (response) {
+        const data = response;
+        setAccess(data.data.data);
+      });
+  };
+
+  const deleteHandle = (e, id) => {
     setModal(true);
     setId(id);
     setAction("delete");
   };
 
+  const accessHandle = (e, id, email) => {
+    setEmail(email);
+    courseAccess(email);
+    setModal(true);
+    setId(id);
+    setAction("access");
+  };
+
+  const addAccess = async () => {
+    setBtn(true);
+    await axios
+      .post(urlCreateAccess, {
+        user_id: id,
+        kursus_id: courseid,
+      })
+      .then(function (response) {
+        setBtn(false);
+        courseAccess(email);
+      })
+      .catch((e) => {
+        setBtn(false);
+      });
+  };
+
+  const deleteAccess = async (idKursus) => {
+    setBtn(true);
+    await axios
+      .post(urlDeleteAccess + `/${id}/${idKursus}`)
+      .then(function (response) {
+        courseAccess(email);
+        setBtn(false);
+      })
+      .catch((e) => {
+        setBtn(false);
+      });
+  };
+
   const deleteUser = async (i) => {
+    setBtn(true);
     await axios
       .post(urlDeleteUser + `/${i}`)
       .then(function (response) {
-        window.location.reload();
         toast({
           title: "Account deleted.",
-          description: "We've deleted your account for you.",
+          description: "We've deleted the account for you.",
           position: "top",
           status: "success",
           duration: 9000,
           isClosable: true,
         });
+        getUser();
+        setModal(false);
+        setBtn(false);
       })
       .catch((e) => {
         const message = e.response.data.message;
@@ -107,11 +189,13 @@ const UserAccount = () => {
           duration: 9000,
           isClosable: true,
         });
+        setBtn(false);
       });
   };
 
   const addUser = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
+    setBtn(true);
     await axios
       .post(urlRegister, {
         name: name,
@@ -122,7 +206,6 @@ const UserAccount = () => {
           "https://res.cloudinary.com/dfkoknpii/image/upload/v1646532385/lastproject/account_jzb2mv.png",
       })
       .then(function (response) {
-        window.location.reload();
         toast({
           title: "Account created.",
           description: "We've created your account for you.",
@@ -131,6 +214,9 @@ const UserAccount = () => {
           duration: 9000,
           isClosable: true,
         });
+        getUser();
+        setModal(false);
+        setBtn(false);
       })
       .catch((e) => {
         const message = e.response.data.message;
@@ -142,6 +228,7 @@ const UserAccount = () => {
           duration: 9000,
           isClosable: true,
         });
+        setBtn(false);
       });
   };
 
@@ -155,7 +242,8 @@ const UserAccount = () => {
   };
 
   const addAdmin = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
+    setBtn(true);
     await axios
       .post(urlRegisterAdmin, {
         name: name,
@@ -166,15 +254,17 @@ const UserAccount = () => {
           "https://res.cloudinary.com/dfkoknpii/image/upload/v1646532385/lastproject/account_jzb2mv.png",
       })
       .then(function (response) {
-        window.location.reload();
         toast({
           title: "Account created.",
-          description: "We've created your account for you.",
+          description: "We've created the account for you.",
           position: "top",
           status: "success",
           duration: 9000,
           isClosable: true,
         });
+        setBtn(false);
+        getUser();
+        setModal(false);
       })
       .catch((e) => {
         const message = e.response.data.message;
@@ -186,11 +276,13 @@ const UserAccount = () => {
           duration: 9000,
           isClosable: true,
         });
+        setBtn(false);
       });
   };
 
   useEffect(() => {
     getUser();
+    getCourse();
   }, []);
   return (
     <div>
@@ -242,12 +334,14 @@ const UserAccount = () => {
           />
         </CardBody>
       </Card>
-      <Modal size="regular" active={modal} toggler={() => setModal(false)}>
+      <Modal size="lg" active={modal} toggler={() => setModal(false)}>
         <ModalHeader toggler={() => setModal(false)}>
           {action === "admin"
             ? "Add Admin"
             : action === "user"
             ? "Add User"
+            : action === "access"
+            ? "Course Access"
             : "Delete Account"}
         </ModalHeader>
         {action === "delete" ? (
@@ -272,11 +366,58 @@ const UserAccount = () => {
               <Button
                 color="green"
                 ripple="light"
+                disabled={btn}
                 onClick={(e) => deleteUser(id)}
               >
                 Save Changes
               </Button>
             </ModalFooter>
+          </div>
+        ) : action === "access" ? (
+          <div>
+            <ModalBody>
+              <div className="flex justify-between space-x-2 items-center">
+                <div className="flex-nowrap flex space-x-2 items-center">
+                  <p className="text-lg">Tambah akses:</p>
+                  <Select
+                    value={courseid}
+                    onChange={(e) => setCourseid(e.target.value)}
+                  >
+                    {course.map((item, i) => (
+                      <option key={i} value={item.id}>
+                        {item.judul}
+                      </option>
+                    ))}
+                  </Select>
+                </div>
+                <Button disabled={btn} color="lightGreen" onClick={addAccess}>
+                  tambah
+                </Button>
+              </div>
+              <div>
+                {access === undefined ? (
+                  <div></div>
+                ) : (
+                  <div>
+                    {access.map((item, i) => (
+                      <div
+                        key={i}
+                        className="flex items-center justify-between rounded-lg bg-cyan-500 text-white py-4 px-2 mt-3"
+                      >
+                        <p className="font-semibold">{item.kursus[0].judul}</p>
+                        <Button
+                          color="pink"
+                          disabled={btn}
+                          onClick={(e) => deleteAccess(item.kursus[0].id)}
+                        >
+                          <TrashIcon className="h-6" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </ModalBody>
           </div>
         ) : (
           <div>
@@ -322,7 +463,13 @@ const UserAccount = () => {
                 </Button>
               </div>
 
-              <Button color="green" type="submit" onClick={action === 'admin' ? addAdmin : addUser} ripple="light">
+              <Button
+                color="green"
+                type="submit"
+                disabled={btn}
+                onClick={action === "admin" ? addAdmin : addUser}
+                ripple="light"
+              >
                 Save Changes
               </Button>
             </ModalFooter>

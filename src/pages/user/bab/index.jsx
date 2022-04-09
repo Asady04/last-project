@@ -8,7 +8,7 @@ import {
 } from "@material-tailwind/react";
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import study from "../../assets/study.jpg";
+import study from "../../../assets/study.jpg";
 
 const Kelas = () => {
   let nav = useNavigate();

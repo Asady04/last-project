@@ -7,7 +7,7 @@ import {
 } from "@material-tailwind/react";
 import axios from "axios";
 import React, { useEffect } from "react";
-import { urlKursus, urlUser } from "../../url";
+import { urlKursus, urlUser } from "../../../url";
 
 const Data = () => {
   const [user, setUser] = React.useState([]);

@@ -6,7 +6,7 @@ import {
   UsersIcon,
 } from "@heroicons/react/outline";
 import { Tab, TabItem, TabList } from "@material-tailwind/react";
-import React, { useEffect } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import text from "../../assets/text.png";
 
@@ -19,7 +19,7 @@ const Sidebar = () => {
       to: "account",
     },
     { name: "Course", logo: <BookOpenIcon className="h-9" />, to: "course" },
-    { name: "Task", logo: <ClipboardListIcon className="h-9" />, to: "mapel" },
+    { name: "Task", logo: <ClipboardListIcon className="h-9" />, to: "task" },
   ];
   const [openTab, setOpenTab] = React.useState(
     localStorage.getItem("tabadmin")
@@ -33,11 +33,12 @@ const Sidebar = () => {
     <div>
       <div className="h-screen fixed top-0 md:left-0 -left-64 overflow-y-auto flex-row flex-nowrap overflow-hidden shadow-xl bg-white w-64 z-40 py-4 px-6 transition-all duration-300">
         <div className="flex-col items-stretch min-h-full flex-nowrap px-0 relative">
-          <a href="">
+          <Link to='/user/course'>
             <span className="text-center inline-block w-full mt-0">
               <img src={text} alt="bimbelz" className=" w-full" />
             </span>
-          </a>
+          </Link>
+
           <div className="flex flex-col">
             <hr className="my-4 min-w-full" />
             <ul className="flex-col min-w-full flex list-none">
@@ -52,7 +53,7 @@ const Sidebar = () => {
                       className={`${
                         parseInt(localStorage.getItem("tabadmin")) === i
                           ? "bg-gradient-to-tr from-cyan-500 to-sky-300 text-white shadow-md"
-                          : "text-gray-700 "
+                          : "text-gray-700 hover:text-cyan-600"
                       } flex items-center gap-4 text-sm px-4 py-3 rounded-lg`}
                     >
                       {tab.logo} {tab.name}
