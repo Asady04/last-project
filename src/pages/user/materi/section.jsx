@@ -15,14 +15,14 @@ import {
   CheckIcon,
   MinusCircleIcon,
   PaperClipIcon,
+  RefreshIcon,
 } from "@heroicons/react/outline";
 import {
   Button,
   Card,
   CardBody,
   CardFooter,
-  Heading4,
-  Paragraph,
+  Typography,
 } from "@material-tailwind/react";
 import axios from "axios";
 import { get } from "draft-js/lib/DefaultDraftBlockRenderMap";
@@ -36,30 +36,32 @@ import {
 
 const Section = ({ i, lesn, check, setCheck }) => {
   const [id, setId] = React.useState();
-  const [lesson, setLesson] = React.useState({});
+  const [loading, setLoading] = React.useState(false);
   const [pict, setPict] = React.useState({});
   const [btn, setBtn] = React.useState(false);
   let formData = new FormData();
   let toast = useToast();
-  const getIsi = async (idl) => {
-    await axios
-      .get(urlMateri + `/${idl}`)
-      .then(function (response) {
-        const data = response;
-        setLesson(data.data.data);
-      })
-      .catch();
-  };
+  // const getIsi = async (idl) => {
+  //   await axios
+  //     .get(urlMateri + `/${idl}`)
+  //     .then(function (response) {
+  //       const data = response;
+  //       setLesson(data.data.data);
+  //     })
+  //     .catch();
+  // };
   const checkTask = async () => {
+    setLoading(true);
     await axios
       .get(urlJawaban + `/${lesn.id}/${localStorage.getItem("email")}`)
       .then(function (response) {
         const data = response;
         setCheck(data.data.data);
+        setLoading(false);
       })
       .catch();
   };
-  
+
   const sendTask = async (e) => {
     e.preventDefault();
     setBtn(true);
@@ -134,120 +136,150 @@ const Section = ({ i, lesn, check, setCheck }) => {
         });
       });
   };
-
+  console.log(check);
   useEffect(() => {
-    setLesson(lesn);
     setId(i);
   }, []);
   return (
     <div>
       <Card>
-        {lesn.isi === undefined ? (
-          <div className="rounded-lg justify-center hover:bg-cyan-100 py-3 px-3 items-center text-cyan-700 flex space-x-2">
-            <MinusCircleIcon className="h-6" />
-            <p>Tidak ada section apapun disini</p>
+        {loading || lesn.isi === undefined ? (
+          <div className="flex justify-center items-center mt-10 py-6">
+            <RefreshIcon className="h-7 stroke-cyan-700 animate-spin" />
           </div>
         ) : (
           <div>
-            <CardBody>
-              <Paragraph
-                dangerouslySetInnerHTML={{ __html: lesn.isi }}
-              ></Paragraph>
-            </CardBody>
-            {lesn.tipe === 2 ? (
-              <CardFooter>
-                {check === undefined ? (
-                  <div></div>
-                ) : (
-                  <div>
-                    {check === null ? (
-                      <FormControl>
-                        <div className="flex">
-                          <InputGroup>
-                            <Input
-                              type="file"
-                              onChange={(e) => setPict(e.target.files[0])}
-                            />
-                            <InputRightAddon
-                              children={<PaperClipIcon className="h-1/2" />}
-                            />
-                          </InputGroup>
-                          <Button
-                            color="cyan"
-                            className="ml-3"
-                            disabled={btn}
-                            onClick={sendTask}
-                          >
-                            Send
-                          </Button>
-                        </div>
-                      </FormControl>
+            {" "}
+            {lesn.isi === undefined ? (
+              <div className="rounded-lg justify-center hover:bg-cyan-100 py-3 px-3 items-center text-cyan-700 flex space-x-2">
+                <MinusCircleIcon className="h-6" />
+                <p>Tidak ada apapun disini</p>
+              </div>
+            ) : (
+              <div>
+                <CardBody>
+                  <Typography
+                    dangerouslySetInnerHTML={{ __html: lesn.isi }}
+                  ></Typography>
+                </CardBody>
+                {lesn.tipe === 2 ? (
+                  <CardFooter>
+                    {check === undefined ? (
+                      <div></div>
                     ) : (
                       <div>
-                        {parseInt(check.nilai) > 0 ? (
+                        {loading ? (
                           <div>
-                            <div className="flex">
-                              <p className="mr-5 text-lg">current answer:</p>
-                              <img
-                                src={check.gambar}
-                                alt=""
-                                className="w-1/2 mb-5 rounded-lg hover:shadow-xl transform duration-300 hover:-translate-y-2 shadow"
-                              />
-                            </div>
-                            <div
-                              className={`text-lg text-white rounded-lg p-5 shadow-md ${
-                                parseInt(check.nilai) >= 75
-                                  ? "bg-green-500"
-                                  : "bg-red-500"
-                              }`}
-                            >
-                              <h1>Nilai : {check.nilai}</h1>
-                              <h1>Komen : {check.komen}</h1>
-                            </div>
-                            {parseInt(check.nilai) >= 75 ? (
-                              <div></div>
+                            <RefreshIcon className="h-5 animate-spin" />
+                          </div>
+                        ) : (
+                          <div>
+                            {check === null ? (
+                              <FormControl>
+                                <div className="flex">
+                                  <InputGroup>
+                                    <Input
+                                      type="file"
+                                      onChange={(e) =>
+                                        setPict(e.target.files[0])
+                                      }
+                                    />
+                                    <InputRightAddon
+                                      children={
+                                        <PaperClipIcon className="h-1/2" />
+                                      }
+                                    />
+                                  </InputGroup>
+                                  <Button
+                                    color="cyan"
+                                    className="ml-3"
+                                    disabled={btn}
+                                    onClick={sendTask}
+                                  >
+                                    {btn ? (
+                                      <RefreshIcon className="h-5 animate-spin" />
+                                    ) : (
+                                      "Send"
+                                    )}
+                                  </Button>
+                                </div>
+                              </FormControl>
                             ) : (
-                              <div className="mt-5">
-                                <FormControl>
-                                  <div className="flex">
-                                    <InputGroup>
-                                      <Input
-                                        type="file"
-                                        onChange={(e) =>
-                                          setPict(e.target.files[0])
-                                        }
+                              <div>
+                                {parseInt(check.nilai) > 0 ? (
+                                  <div>
+                                    <div className="flex">
+                                      <p className="mr-5 text-lg">
+                                        current answer:
+                                      </p>
+                                      <img
+                                        src={check.gambar}
+                                        alt=""
+                                        className="w-1/2 mb-5 rounded-lg hover:shadow-xl transform duration-300 hover:-translate-y-2 shadow"
                                       />
-                                      <InputRightAddon
-                                        children={
-                                          <PaperClipIcon className="h-1/2" />
-                                        }
-                                      />
-                                    </InputGroup>
-                                    <Button
-                                      color="cyan"
-                                      className="ml-3"
-                                      onClick={updateTask}
-                                      disabled={btn}
+                                    </div>
+                                    <div
+                                      className={`text-lg text-white rounded-lg p-5 shadow-md ${
+                                        parseInt(check.nilai) >= 75
+                                          ? "bg-green-500"
+                                          : "bg-red-500"
+                                      }`}
                                     >
-                                      Send
-                                    </Button>
+                                      <h1>Nilai : {check.nilai}</h1>
+                                      <h1>Komen : {check.komen}</h1>
+                                    </div>
+                                    {parseInt(check.nilai) >= 75 ? (
+                                      <div></div>
+                                    ) : (
+                                      <div className="mt-5">
+                                        <FormControl>
+                                          <div className="flex">
+                                            <InputGroup>
+                                              <Input
+                                                type="file"
+                                                onChange={(e) =>
+                                                  setPict(e.target.files[0])
+                                                }
+                                              />
+                                              <InputRightAddon
+                                                children={
+                                                  <PaperClipIcon className="h-1/2" />
+                                                }
+                                              />
+                                            </InputGroup>
+                                            <Button
+                                              color="cyan"
+                                              className="ml-3"
+                                              onClick={updateTask}
+                                              disabled={btn}
+                                            >
+                                              {btn ? (
+                                                <RefreshIcon className="h-5 animate-spin" />
+                                              ) : (
+                                                "Send"
+                                              )}
+                                            </Button>
+                                          </div>
+                                        </FormControl>
+                                      </div>
+                                    )}
                                   </div>
-                                </FormControl>
+                                ) : (
+                                  <Typography variant="h4" color="teal">
+                                    Tugas anda dalam penilaian..
+                                  </Typography>
+                                )}
                               </div>
                             )}
                           </div>
-                        ) : (
-                          <Heading4 color="teal">
-                            Tugas anda dalam penilaian..
-                          </Heading4>
                         )}
                       </div>
                     )}
-                  </div>
+                  </CardFooter>
+                ) : (
+                  <div></div>
                 )}
-              </CardFooter>
-            ) : (
-              <div></div>
+              </div>
             )}
           </div>
         )}

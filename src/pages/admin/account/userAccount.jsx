@@ -3,6 +3,7 @@ import {
   CheckCircleIcon,
   PencilAltIcon,
   PlusCircleIcon,
+  RefreshIcon,
   TrashIcon,
 } from "@heroicons/react/outline";
 
@@ -12,11 +13,13 @@ import {
   Card,
   CardBody,
   Input,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
+  Dialog,
+  DialogBody,
+  DialogFooter,
+  DialogHeader,
+  Option,
   Paragraph,
+  Typography,
 } from "@material-tailwind/react";
 import axios from "axios";
 import React, { useEffect } from "react";
@@ -44,9 +47,11 @@ const UserAccount = () => {
   const [email, setEmail] = React.useState();
   const [password, setPassword] = React.useState();
   const [btn, setBtn] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const [load, setLoad] = React.useState(false);
   const [cpassword, setCpassword] = React.useState();
   const [action, setAction] = React.useState();
-  const [modal, setModal] = React.useState();
+  const [dialog, setDialog] = React.useState();
   let toast = useToast();
 
   const column = [
@@ -66,7 +71,7 @@ const UserAccount = () => {
         <div className="flex">
           <Button
             color="teal"
-            buttonType="link"
+            variant="text"
             size="regular"
             rounded={false}
             block={false}
@@ -78,7 +83,7 @@ const UserAccount = () => {
           </Button>
           <Button
             color="pink"
-            buttonType="link"
+            variant="text"
             size="regular"
             rounded={false}
             block={false}
@@ -94,9 +99,11 @@ const UserAccount = () => {
   ];
 
   const getUser = async () => {
+    setLoad(true);
     await axios.get(urlUser).then(function (response) {
       const data = response;
       setUser(data.data.data);
+      setLoad(false);
     });
   };
 
@@ -109,6 +116,7 @@ const UserAccount = () => {
   };
 
   const courseAccess = async (email) => {
+    setLoading(true);
     await axios
       .post(urlAccess, {
         email: email,
@@ -116,11 +124,12 @@ const UserAccount = () => {
       .then(function (response) {
         const data = response;
         setAccess(data.data.data);
+        setLoading(false);
       });
   };
 
   const deleteHandle = (e, id) => {
-    setModal(true);
+    setDialog(true);
     setId(id);
     setAction("delete");
   };
@@ -128,7 +137,7 @@ const UserAccount = () => {
   const accessHandle = (e, id, email) => {
     setEmail(email);
     courseAccess(email);
-    setModal(true);
+    setDialog(true);
     setId(id);
     setAction("access");
   };
@@ -176,7 +185,7 @@ const UserAccount = () => {
           isClosable: true,
         });
         getUser();
-        setModal(false);
+        setDialog(false);
         setBtn(false);
       })
       .catch((e) => {
@@ -190,6 +199,7 @@ const UserAccount = () => {
           isClosable: true,
         });
         setBtn(false);
+        setDialog(false);
       });
   };
 
@@ -215,7 +225,7 @@ const UserAccount = () => {
           isClosable: true,
         });
         getUser();
-        setModal(false);
+        setDialog(false);
         setBtn(false);
       })
       .catch((e) => {
@@ -228,12 +238,13 @@ const UserAccount = () => {
           duration: 9000,
           isClosable: true,
         });
+        setDialog(false);
         setBtn(false);
       });
   };
 
   const openModal = (itu) => {
-    setModal(true);
+    setDialog(true);
     setName("");
     setPassword("");
     setCpassword("");
@@ -264,7 +275,7 @@ const UserAccount = () => {
         });
         setBtn(false);
         getUser();
-        setModal(false);
+        setDialog(false);
       })
       .catch((e) => {
         const message = e.response.data.message;
@@ -277,8 +288,10 @@ const UserAccount = () => {
           isClosable: true,
         });
         setBtn(false);
+        setDialog(false);
       });
   };
+  console.log(courseid);
 
   useEffect(() => {
     getUser();
@@ -288,54 +301,63 @@ const UserAccount = () => {
     <div>
       <Card className="mt-6">
         <CardBody>
-          <DataTable
-            title={
-              <div className="flex justify-end py-3 mb-6">
-                <div className="flex">
-                  <Button
-                    className="mr-3"
-                    color="cyan"
-                    size="sm"
-                    rounded={false}
-                    block={false}
-                    iconOnly={false}
-                    ripple="dark"
-                    onClick={(e) => {
-                      openModal("user");
-                    }}
-                  >
-                    <PlusCircleIcon className="h-6" />
-                    Add User
-                  </Button>
-                  <Button
-                    color="cyan"
-                    size="sm"
-                    rounded={false}
-                    block={false}
-                    iconOnly={false}
-                    ripple="dark"
-                    onClick={(e) => {
-                      openModal("admin");
-                    }}
-                  >
-                    <PlusCircleIcon className="h-6" />
-                    Add Admin
-                  </Button>
+          {load ? (
+            <div className="flex justify-center">
+              <RefreshIcon className="h-7 stroke-cyan-700 animate-spin" />
+            </div>
+          ) : (
+            <DataTable
+              title={
+                <div className="flex justify-end py-3 mb-6">
+                  <div className="flex">
+                    <Button
+                      className="mr-3 flex items-center space-x-2"
+                      color="cyan"
+                      size="md"
+                      variant="gradient"
+                      rounded={false}
+                      block={false}
+                      iconOnly={false}
+                      ripple="dark"
+                      onClick={(e) => {
+                        openModal("user");
+                      }}
+                    >
+                      <PlusCircleIcon className="h-6" />
+                      <Typography variant="small">Add user</Typography>
+                    </Button>
+                    <Button
+                      variant="gradient"
+                      className="mr-3 flex items-center space-x-2"
+                      color="cyan"
+                      size="md"
+                      rounded={false}
+                      block={false}
+                      iconOnly={false}
+                      ripple="dark"
+                      onClick={(e) => {
+                        openModal("admin");
+                      }}
+                    >
+                      <PlusCircleIcon className="h-6" />
+                      <Typography variant="small">Add admin</Typography>
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            }
-            columns={column}
-            data={user}
-            pagination={""}
-            subHeader={""}
-            selectableRows={""}
-            persistTableHead
-            dense
-          />
+              }
+              columns={column}
+              data={user}
+              pagination={""}
+              subHeader={""}
+              selectableRows={""}
+              persistTableHead
+              dense
+            />
+          )}
         </CardBody>
       </Card>
-      <Modal size="lg" active={modal} toggler={() => setModal(false)}>
-        <ModalHeader toggler={() => setModal(false)}>
+      <Dialog size="md" open={dialog} handler={() => setDialog(false)}>
+        <DialogHeader>
           {action === "admin"
             ? "Add Admin"
             : action === "user"
@@ -343,21 +365,21 @@ const UserAccount = () => {
             : action === "access"
             ? "Course Access"
             : "Delete Account"}
-        </ModalHeader>
+        </DialogHeader>
         {action === "delete" ? (
           <div>
-            <ModalBody>
-              <div className="py-6">
+            <DialogBody divider>
+              <div className="py-6 mx-auto">
                 <p className="text-center text-xl text-red-600 font-semibold">
                   Are You Sure?
                 </p>
               </div>
-            </ModalBody>
-            <ModalFooter>
+            </DialogBody>
+            <DialogFooter>
               <Button
                 color="red"
-                buttonType="link"
-                onClick={(e) => setModal(false)}
+                variant="text"
+                onClick={(e) => setDialog(false)}
                 ripple="dark"
               >
                 Close
@@ -367,19 +389,22 @@ const UserAccount = () => {
                 color="green"
                 ripple="light"
                 disabled={btn}
+                variant="gradient"
                 onClick={(e) => deleteUser(id)}
               >
                 Save Changes
               </Button>
-            </ModalFooter>
+            </DialogFooter>
           </div>
         ) : action === "access" ? (
           <div>
-            <ModalBody>
+            <DialogBody divider className="flex-col">
               <div className="flex justify-between space-x-2 items-center">
                 <div className="flex-nowrap flex space-x-2 items-center">
                   <p className="text-lg">Tambah akses:</p>
                   <Select
+                    color="teal"
+                    label="select class"
                     value={courseid}
                     onChange={(e) => setCourseid(e.target.value)}
                   >
@@ -390,8 +415,17 @@ const UserAccount = () => {
                     ))}
                   </Select>
                 </div>
-                <Button disabled={btn} color="lightGreen" onClick={addAccess}>
-                  tambah
+                <Button
+                  disabled={btn}
+                  variant="gradient"
+                  color="teal"
+                  onClick={addAccess}
+                >
+                  {btn ? (
+                    <RefreshIcon className="h-5 animate-spin" />
+                  ) : (
+                    "tambah"
+                  )}
                 </Button>
               </div>
               <div>
@@ -399,64 +433,79 @@ const UserAccount = () => {
                   <div></div>
                 ) : (
                   <div>
-                    {access.map((item, i) => (
-                      <div
-                        key={i}
-                        className="flex items-center justify-between rounded-lg bg-cyan-500 text-white py-4 px-2 mt-3"
-                      >
-                        <p className="font-semibold">{item.kursus[0].judul}</p>
-                        <Button
-                          color="pink"
-                          disabled={btn}
-                          onClick={(e) => deleteAccess(item.kursus[0].id)}
-                        >
-                          <TrashIcon className="h-6" />
-                        </Button>
+                    {loading ? (
+                      <div className="flex items-center justify-center mt-4">
+                        <RefreshIcon className="h-7 stroke-teal-400 animate-spin" />
                       </div>
-                    ))}
+                    ) : (
+                      <div>
+                        {access.map((item, i) => (
+                          <div
+                            key={i}
+                            className="flex items-center justify-between rounded-lg bg-cyan-500 text-white py-4 px-2 mt-3"
+                          >
+                            <p className="font-semibold">
+                              {item.kursus[0].judul}
+                            </p>
+                            <Button
+                              color="pink"
+                              disabled={btn}
+                              variant="gradient"
+                              onClick={(e) => deleteAccess(item.kursus[0].id)}
+                            >
+                              <TrashIcon className="h-6" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
-            </ModalBody>
+            </DialogBody>
           </div>
         ) : (
           <div>
-            <ModalBody>
+            <DialogBody divider className="flex-col">
               <div>
                 <Input
-                  placeholder="name"
+                  variant="outlined"
+                  label="name"
                   value={name}
                   onInput={(e) => setName(e.target.value)}
                 />
               </div>
               <div className="mt-4">
                 <Input
-                  placeholder="email"
+                  variant="outlined"
+                  label="email"
                   value={email}
                   onInput={(e) => setEmail(e.target.value)}
                 />
               </div>
               <div className="mt-4">
                 <Input
-                  placeholder="password"
+                  variant="outlined"
+                  label="password"
                   value={password}
                   onInput={(e) => setPassword(e.target.value)}
                 />
               </div>
               <div className="mt-4">
                 <Input
-                  placeholder="password confirmation"
+                  variant="outlined"
+                  label="password confirmation"
                   value={cpassword}
                   onInput={(e) => setCpassword(e.target.value)}
                 />
               </div>
-            </ModalBody>
-            <ModalFooter>
+            </DialogBody>
+            <DialogFooter>
               <div>
                 <Button
                   color="red"
-                  buttonType="link"
-                  onClick={(e) => setModal(false)}
+                  variant="text"
+                  onClick={(e) => setDialog(false)}
                   ripple="dark"
                 >
                   Close
@@ -467,15 +516,20 @@ const UserAccount = () => {
                 color="green"
                 type="submit"
                 disabled={btn}
+                variant="gradient"
                 onClick={action === "admin" ? addAdmin : addUser}
                 ripple="light"
               >
-                Save Changes
+                {btn ? (
+                  <RefreshIcon className="h-5 animate-spin" />
+                ) : (
+                  "Save Changes"
+                )}
               </Button>
-            </ModalFooter>
+            </DialogFooter>
           </div>
         )}
-      </Modal>
+      </Dialog>
     </div>
   );
 };

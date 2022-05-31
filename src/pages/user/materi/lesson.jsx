@@ -52,7 +52,7 @@ const Lesson = ({ setCheck,bab1, setTes, setL, bab, setLength, setI }) => {
         <AccordionPanel
           pb={4}
           key={i}
-          className="cursor-pointer hover:bg-gray-100 transform duration-300"
+          className="cursor-pointer hover:bg-grey-100 transform duration-300"
           onClick={(e) => {
             checkTask(item.id)
             setI(i);

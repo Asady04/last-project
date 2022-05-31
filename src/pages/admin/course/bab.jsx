@@ -5,19 +5,24 @@ import {
   AccordionItem,
   AccordionPanel,
   Box,
-  ModalFocusScope,
+  DialogFocusScope,
   useToast,
 } from "@chakra-ui/react";
-import { ArrowLeftIcon, PlusCircleIcon } from "@heroicons/react/outline";
+import {
+  ArrowLeftIcon,
+  PlusCircleIcon,
+  RefreshIcon,
+} from "@heroicons/react/outline";
 import {
   Button,
   Card,
   CardBody,
   Input,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
+  Dialog,
+  DialogBody,
+  DialogFooter,
+  DialogHeader,
+  Typography,
 } from "@material-tailwind/react";
 import axios from "axios";
 import React, { useEffect } from "react";
@@ -28,23 +33,26 @@ import Lesson from "./lesson";
 const Bab = () => {
   const [bab, setBab] = React.useState([]);
   const [judul, setJudul] = React.useState();
-  const [modal, setModal] = React.useState(false);
+  const [dialog, setDialog] = React.useState(false);
   const [btn, setBtn] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
   const [action, setAction] = React.useState();
   let { state } = useLocation();
   let toast = useToast();
   let { id } = state;
 
   const getBab = async () => {
+    setLoading(true);
     await axios
       .get(urlBab + `/${id}`)
       .then(function (response) {
         const data = response;
         setBab(data.data.data);
+        setLoading(false);
       })
       .catch((e) => {
         const message = e.response.data.message;
-
+        setLoading(false);
         toast({
           description: message,
           status: "error",
@@ -65,7 +73,7 @@ const Bab = () => {
       .then(function (response) {
         getBab();
         setBtn(false);
-        setModal(false);
+        setDialog(false);
         toast({
           title: "Section Created.",
           description: "We've created a section for you.",
@@ -98,7 +106,7 @@ const Bab = () => {
           <div className="flex justify-between">
             <div className="w-1/12">
               <Link to="/admin/course" replace={true}>
-                <Button buttonType="link" color="blueGray">
+                <Button variant="text" color="blue-grey">
                   <ArrowLeftIcon className="h-5" />
                 </Button>
               </Link>
@@ -106,55 +114,63 @@ const Bab = () => {
             <Button
               color="cyan"
               size="sm"
+              className="flex space-x-2 items-center justify-center"
               rounded={false}
               block={false}
               iconOnly={false}
               ripple="dark"
               onClick={(e) => {
-                setModal(true);
+                setDialog(true);
                 setAction("add");
                 setJudul("");
               }}
             >
               <PlusCircleIcon className="h-6" />
-              Tambah
+              <Typography variant="small">add section</Typography>
             </Button>
           </div>
           <div className="mt-5">
-            <Accordion allowMultiple>
-              {bab.map((item, i) => (
-                <AccordionItem key={i}>
-                  <AccordionButton>
-                    <Box flex="1" textAlign="left">
-                      <h1 className="text-lg font-semibold">
-                        {item.bab.judul}
-                      </h1>
-                    </Box>
-                    <AccordionIcon />
-                  </AccordionButton>
-                  <Lesson getBab={getBab} bab={item.bab} />
-                </AccordionItem>
-              ))}
-            </Accordion>
+            {loading ? (
+              <div className="flex justify-center items-center">
+                <RefreshIcon className="h-7 stroke-teal-400 animate-spin" />
+              </div>
+            ) : (
+              <Accordion allowMultiple>
+                {bab.map((item, i) => (
+                  <AccordionItem key={i}>
+                    <AccordionButton>
+                      <Box flex="1" textAlign="left">
+                        <h1 className="text-lg font-semibold">
+                          {item.bab.judul}
+                        </h1>
+                      </Box>
+                      <AccordionIcon />
+                    </AccordionButton>
+                    <Lesson getBab={getBab} bab={item.bab} />
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            )}
           </div>
         </CardBody>
       </Card>
-      <Modal active={modal} toggler={() => setModal(false)}>
-        <ModalHeader toggler={() => setModal(false)}>Add Section</ModalHeader>
-        <ModalBody>
+      <Dialog open={dialog} handler={() => setDialog(false)}>
+        <DialogHeader>Add Section</DialogHeader>
+        <DialogBody divider>
           <Input
-            placeholder="judul"
+            variant="outlined"
+            label="judul"
             value={judul}
             onInput={(e) => setJudul(e.target.value)}
           />
-        </ModalBody>
-        <ModalFooter>
+        </DialogBody>
+        <DialogFooter>
           <Button
             color="red"
-            buttonType="link"
+            variant="text"
             onClick={(e) => {
               e.preventDefault();
-              setModal(false);
+              setDialog(false);
             }}
             ripple="dark"
           >
@@ -167,10 +183,14 @@ const Bab = () => {
             disabled={btn}
             onClick={saveBab}
           >
-            Save Changes
+            {btn ? (
+              <RefreshIcon className="h-5 animate-spin" />
+            ) : (
+              "Save Changes"
+            )}
           </Button>
-        </ModalFooter>
-      </Modal>
+        </DialogFooter>
+      </Dialog>
     </div>
   );
 };

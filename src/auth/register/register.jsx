@@ -1,17 +1,20 @@
 import React, { Component } from "react";
 import axios from "axios";
-import Card from "@material-tailwind/react/Card";
-import CardHeader from "@material-tailwind/react/CardHeader";
-import CardBody from "@material-tailwind/react/CardBody";
-import Input from "@material-tailwind/react/Input";
-import Button from "@material-tailwind/react/Button";
-import H5 from "@material-tailwind/react/Heading5";
-import { EyeIcon, EyeOffIcon } from "@heroicons/react/outline";
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  Input,
+  Button,
+  CardFooter,
+  Typography,
+} from "@material-tailwind/react";
+import { EyeIcon, EyeOffIcon, RefreshIcon } from "@heroicons/react/outline";
 import { urlLogin, urlProgress, urlRegister } from "../../url";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.png";
 import { useToast } from "@chakra-ui/react";
-import { CardFooter } from "@material-tailwind/react";
+
 const Register = () => {
   let nav = useNavigate();
   let toast = useToast();
@@ -20,12 +23,14 @@ const Register = () => {
   const [password, setPassword] = React.useState();
   const [cpassword, setCpassword] = React.useState();
   const [showPassword, setShowPassword] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
 
   const toggleShow = () => {
     setShowPassword(showPassword ? false : true);
   };
   const register = async (e) => {
     e.preventDefault();
+    setLoading(true)
     await axios
       .post(urlRegister, {
         name: name,
@@ -40,6 +45,7 @@ const Register = () => {
       })
       .catch((e) => {
         const message = e.response.data.message;
+        setLoading(false)
         toast({
           description: message,
           status: "error",
@@ -64,8 +70,14 @@ const Register = () => {
           <div className="flex h-screen items-center w-screen">
             <div className="mx-auto w-1/2">
               <Card size="lg">
-                <CardHeader color="cyan" size="lg">
-                  <H5 color="white">Register</H5>
+                <CardHeader color="cyan" className="py-5">
+                  <Typography
+                    variant="h5"
+                    color="white"
+                    className="text-center"
+                  >
+                    Register
+                  </Typography>
                 </CardHeader>
 
                 <CardBody size="lg">
@@ -74,9 +86,8 @@ const Register = () => {
                       <Input
                         type="text"
                         color="cyan"
-                        size="regular"
-                        outline={true}
-                        placeholder="Name"
+                        variant="outlined"
+                        label="Name"
                         value={name}
                         onInput={(e) => setName(e.target.value)}
                       />
@@ -85,9 +96,8 @@ const Register = () => {
                       <Input
                         type="text"
                         color="cyan"
-                        size="regular"
-                        outline={true}
-                        placeholder="Email"
+                        variant="outlined"
+                        label="Email"
                         value={email}
                         onInput={(e) => setEmail(e.target.value)}
                       />
@@ -96,17 +106,16 @@ const Register = () => {
                       <Input
                         type={showPassword ? "text" : "password"}
                         color="cyan"
-                        size="regular"
-                        outline={true}
-                        placeholder="Password"
+                        variant="outlined"
+                        label="Password"
                         value={password}
                         onInput={(e) => setPassword(e.target.value)}
                       />
                       <div onClick={toggleShow} className="cursor-pointer">
                         {showPassword ? (
-                          <EyeOffIcon className="absolute h-1/2 top-3 right-5 text-gray-400" />
+                          <EyeOffIcon className="absolute h-1/2 top-3 right-5 text-grey-400" />
                         ) : (
-                          <EyeIcon className="absolute h-1/2 top-3 right-5 text-gray-400" />
+                          <EyeIcon className="absolute h-1/2 top-3 right-5 text-grey-400" />
                         )}
                       </div>
                     </div>
@@ -114,17 +123,16 @@ const Register = () => {
                       <Input
                         type={showPassword ? "text" : "password"}
                         color="cyan"
-                        size="regular"
-                        outline={true}
-                        placeholder="Password confirmation"
+                        variant="outlined"
+                        label="Password confirmation"
                         value={cpassword}
                         onInput={(e) => setCpassword(e.target.value)}
                       />
                       <div onClick={toggleShow} className="cursor-pointer">
                         {showPassword ? (
-                          <EyeOffIcon className="absolute h-1/2 top-3 right-5 text-gray-400" />
+                          <EyeOffIcon className="absolute h-1/2 top-3 right-5 text-grey-400" />
                         ) : (
-                          <EyeIcon className="absolute h-1/2 top-3 right-5 text-gray-400" />
+                          <EyeIcon className="absolute h-1/2 top-3 right-5 text-grey-400" />
                         )}
                       </div>
                     </div>
@@ -133,16 +141,19 @@ const Register = () => {
                         type="submit"
                         color="cyan"
                         buttonType="filled"
-                        size="regular"
                         ripple="light"
                       >
-                        Sign up
+                        {loading ? (
+                          <RefreshIcon className="animate-spin h-5" />
+                        ) : (
+                          "Sign Up"
+                        )}
                       </Button>
                     </div>
                   </form>
                 </CardBody>
                 <CardFooter>
-                  <Link to='/login'>
+                  <Link to="/login">
                     <p className="text-center text-cyan-600 text-xs">
                       Already have account?
                     </p>

@@ -1,7 +1,6 @@
 //User
 export { default as User } from "./user/user";
 export { default as Kursus } from "./user/kursus/index";
-export { default as Bab } from "./user/bab/index";
 export { default as Materi } from "./user/materi/index";
 export { default as NotFound } from "./404";
 

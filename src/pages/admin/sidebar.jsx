@@ -53,7 +53,7 @@ const Sidebar = () => {
                       className={`${
                         parseInt(localStorage.getItem("tabadmin")) === i
                           ? "bg-gradient-to-tr from-cyan-500 to-sky-300 text-white shadow-md"
-                          : "text-gray-700 hover:text-cyan-600"
+                          : "text-grey-700 hover:text-cyan-600"
                       } flex items-center gap-4 text-sm px-4 py-3 rounded-lg`}
                     >
                       {tab.logo} {tab.name}

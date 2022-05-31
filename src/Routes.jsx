@@ -13,7 +13,6 @@ import {
   UserAccount,
   SelectClass,
   Kursus,
-  Bab,
   Materi,
   AdminKursus,
   Data,
@@ -73,7 +72,6 @@ const Rute = (value) => {
             />
             <Route path="user" exact element={<User />}>
               <Route path="course" element={<Kursus />} />
-              <Route path="section" element={<Bab />} />
               <Route path="lesson" element={<Materi />} />
             </Route>
           </Route>

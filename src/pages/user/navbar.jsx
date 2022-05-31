@@ -1,8 +1,16 @@
-import { DropdownLink, Image } from "@material-tailwind/react";
+import {
+  MenuItem,
+  Ava,
+  Avatar,
+  MenuItemtar,
+  Menu,
+  MenuHandler,
+  Button,
+  MenuList,
+} from "@material-tailwind/react";
 import text from "../../assets/text.png";
 import account from "../../assets/account.png";
 import React from "react";
-import DropdownS from "@material-tailwind/react/DropdownS";
 import { CogIcon, DatabaseIcon, LogoutIcon } from "@heroicons/react/outline";
 import { useNavigate } from "react-router-dom";
 
@@ -26,7 +34,7 @@ const Navus = () => {
                 nav("/user", { replace: true });
               }}
             >
-              <Image src={text} className="w-32" />
+              <Avatar src={text} className="w-32" />
             </a>
           </span>
           <div className="flex justify-end items-center">
@@ -34,71 +42,66 @@ const Navus = () => {
               <h3 className="font-semibold">{nama}</h3>
               <p className="text-sm">{email}</p>
             </div>
-            <DropdownS
-              className="h-20"
-              color="transparent"
-              placement="top-end"
-              buttonText={
-                <Image src={account} raised={true} rounded={true} width="50" />
-              }
-              buttonType="link"
-              size="regular"
-              ripple="light"
-              rounded={true}
-            >
+            <Menu>
               <div className="lg:hidden p-4">
                 <h3 className="font-semibold">{nama}</h3>
                 <p className="text-sm">{email}</p>
                 <hr className="mt-3" />
               </div>
-
-              {localStorage.getItem("role") === "admin" ? (
-                <DropdownLink
+              <MenuHandler>
+                <Button ripple={false} variant="text">
+                  <Avatar src={account} variant="circular" size="md" />
+                </Button>
+              </MenuHandler>
+              <MenuList>
+                {localStorage.getItem("role") === "admin" ? (
+                  <MenuItem
+                    href="#"
+                    color="cyan"
+                    ripple="light"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      localStorage.setItem("tabadmin", 0);
+                      nav("/admin", { replace: true });
+                    }}
+                  >
+                    <div className="flex items-center">
+                      <DatabaseIcon className="w-6" />
+                      <p className="ml-2">Dashboard</p>
+                    </div>
+                  </MenuItem>
+                ) : (
+                  <div></div>
+                )}
+                <MenuItem
                   href="#"
                   color="cyan"
                   ripple="light"
                   onClick={(e) => {
                     e.preventDefault();
-                    localStorage.setItem('tabadmin', 0)
-                    nav("/admin", { replace: true });
                   }}
                 >
                   <div className="flex items-center">
-                    <DatabaseIcon className="w-6" />
-                    <p className="ml-2">Dashboard</p>
+                    <CogIcon className="w-6" />
+                    <p className="ml-2">Setting</p>
                   </div>
-                </DropdownLink>
-              ) : (
-                <div></div>
-              )}
-              <DropdownLink
-                href="#"
-                color="cyan"
-                ripple="light"
-                onClick={(e) => {
-                  e.preventDefault();
-                }}
-              >
-                <div className="flex items-center">
-                  <CogIcon className="w-6" />
-                  <p className="ml-2">Setting</p>
-                </div>
-              </DropdownLink>
-              <DropdownLink
-                href="#"
-                color="cyan"
-                ripple="light"
-                onClick={(e) => {
-                  e.preventDefault();
-                  logout();
-                }}
-              >
-                <div className="flex items-center">
-                  <LogoutIcon className="w-6" />
-                  <p className="ml-2">Logout</p>
-                </div>
-              </DropdownLink>
-            </DropdownS>
+                </MenuItem>
+                <MenuItem
+                  href="#"
+                  color="cyan"
+                  ripple="light"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    logout();
+                  }}
+                >
+                  <div className="flex items-center">
+                    <LogoutIcon className="w-6" />
+                    <p className="ml-2">Logout</p>
+                  </div>
+                </MenuItem>
+              </MenuList>
+            </Menu>
           </div>
         </div>
       </nav>

@@ -1,9 +1,12 @@
+import { RefreshIcon } from "@heroicons/react/outline";
 import { BookOpenIcon, UserGroupIcon } from "@heroicons/react/solid";
 import {
   Card,
+  CardBody,
+  CardFooter,
   CardHeader,
-  CardRow,
   CardStatus,
+  Typography,
 } from "@material-tailwind/react";
 import axios from "axios";
 import React, { useEffect } from "react";
@@ -12,15 +15,21 @@ import { urlKursus, urlUser } from "../../../url";
 const Data = () => {
   const [user, setUser] = React.useState([]);
   const [course, setCourse] = React.useState([]);
+  const [loading, setLoading] = React.useState(false);
   const getUser = async () => {
+    setLoading(true);
     await axios.get(urlUser).then(function (response) {
       const data = response;
       setUser(data.data.data);
+      setLoading(false);
     });
   };
   const getCourse = async () => {
+    setLoading(true);
+
     await axios.get(urlKursus).then(function (response) {
       const data = response;
+      setLoading(false);
       setCourse(data.data.data);
     });
   };
@@ -31,24 +40,46 @@ const Data = () => {
   }, []);
   return (
     <div>
-      <div className="flex justify-between">
-        <Card className="mt-7 w-96">
-          <CardRow>
-            <CardHeader color="lightBlue" size="lg" iconOnly>
+      {loading ? (
+        <div className="flex items-center justify-center"><RefreshIcon className="stroke-cyan-700 animate-spin h-16"/></div>
+      ) : (
+        <div className="grid grid-cols-3 gap-5">
+          <Card className="mt-7 w-full" variant="filled">
+            <CardHeader
+              className="w-1/4 flex items-center justify-center p-5"
+              color="light-blue"
+              size="xs"
+              iconOnly
+            >
               <UserGroupIcon className="w-16" />
             </CardHeader>
-            <CardStatus title="Users" amount={user.length} />
-          </CardRow>
-        </Card>
-        <Card className="mt-7 w-96">
-          <CardRow>
-            <CardHeader color="lightBlue" size="lg" iconOnly>
+            <CardBody>Users</CardBody>
+            <CardFooter
+              divider
+              className="flex items-center justify-between py-3"
+            >
+              <Typography variant="small">{user.length}</Typography>
+            </CardFooter>
+          </Card>
+          <Card className="mt-7 w-96">
+            <CardHeader
+              className="w-1/4 flex items-center justify-center p-5"
+              color="light-green"
+              size="xs"
+              iconOnly
+            >
               <BookOpenIcon className="w-16" />
             </CardHeader>
-            <CardStatus title="Course" amount={course.length} />
-          </CardRow>
-        </Card>
-      </div>
+            <CardBody>Courses</CardBody>
+            <CardFooter
+              divider
+              className="flex items-center justify-between py-3"
+            >
+              <Typography variant="small">{course.length}</Typography>
+            </CardFooter>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };

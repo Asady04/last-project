@@ -3,17 +3,22 @@ import {
   DotsVerticalIcon,
   PencilIcon,
   PlusCircleIcon,
+  RefreshIcon,
   TrashIcon,
 } from "@heroicons/react/outline";
 import {
   Button,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
+  Dialog,
+  DialogBody,
+  DialogFooter,
+  DialogHeader,
   Input,
-  DropdownLink,
-  Label,
+  Menu,
+  Chip,
+  MenuHandler,
+  MenuList,
+  MenuItem,
+  Typography,
 } from "@material-tailwind/react";
 import axios from "axios";
 import React, { useEffect } from "react";
@@ -28,14 +33,13 @@ import {
 import { EditorState, convertToRaw } from "draft-js";
 import { Editor } from "react-draft-wysiwyg";
 import draftjsToHtml from "draftjs-to-html";
-import DropdownS from "@material-tailwind/react/DropdownS";
 
 const Lesson = ({ bab, getBab }) => {
   const [judul, setJudul] = React.useState();
   const [isi, setIsi] = React.useState();
   const [tipe, setTipe] = React.useState(1);
   const [id, setId] = React.useState();
-  const [modal, setModal] = React.useState(false);
+  const [dialog, setDialog] = React.useState(false);
   const [btn, setBtn] = React.useState(false);
   const [action, setAction] = React.useState();
   let editorState = EditorState.createEmpty();
@@ -46,14 +50,14 @@ const Lesson = ({ bab, getBab }) => {
     setEditor(e);
   };
 
-  const closeModal = () => {
-    setModal(false);
+  const closeDialog = () => {
+    setDialog(false);
     setJudul("");
     setEditor(editorState);
   };
 
   const saveLesson = async () => {
-    setBtn(true)
+    setBtn(true);
     await axios
       .post(urlSaveMateri, {
         judul: judul,
@@ -64,8 +68,8 @@ const Lesson = ({ bab, getBab }) => {
       })
       .then(function (response) {
         getBab();
-        setBtn(false)
-        setModal(false)
+        setBtn(false);
+        setDialog(false);
         toast({
           title: "Lesson created.",
           description: "We've created a lesson in this section",
@@ -77,7 +81,7 @@ const Lesson = ({ bab, getBab }) => {
       })
       .catch((e) => {
         const message = e.response.data.message;
-        setBtn(false)
+        setBtn(false);
         toast({
           description: message,
           status: "error",
@@ -89,7 +93,7 @@ const Lesson = ({ bab, getBab }) => {
   };
 
   const updateLesson = async () => {
-    setBtn(true)
+    setBtn(true);
     await axios
       .post(urlUpdateMateri, {
         judul: judul,
@@ -101,8 +105,8 @@ const Lesson = ({ bab, getBab }) => {
       })
       .then(function (response) {
         getBab();
-        setModal(false)
-        setBtn(false)
+        setDialog(false);
+        setBtn(false);
         toast({
           title: "Lesson updated.",
           description: "We've change the lesson for you.",
@@ -114,7 +118,7 @@ const Lesson = ({ bab, getBab }) => {
       })
       .catch((e) => {
         const message = e.response.data.message;
-        setBtn(false)
+        setBtn(false);
         toast({
           description: message,
           status: "error",
@@ -126,7 +130,7 @@ const Lesson = ({ bab, getBab }) => {
   };
 
   const updateBab = async (id, idk) => {
-    setBtn(true)
+    setBtn(true);
     await axios
       .post(urlUpdateBab, {
         judul: judul,
@@ -134,7 +138,7 @@ const Lesson = ({ bab, getBab }) => {
         idKursus: bab.kursus_id,
       })
       .then(function (response) {
-        setBtn(false)
+        setBtn(false);
         toast({
           title: "Section updated.",
           description: "We've change the section for you.",
@@ -144,11 +148,11 @@ const Lesson = ({ bab, getBab }) => {
           isClosable: true,
         });
         getBab();
-        setModal(false)
+        setDialog(false);
       })
       .catch((e) => {
         const message = e.response.data.message;
-        setBtn(false)
+        setBtn(false);
         toast({
           description: message,
           status: "error",
@@ -160,13 +164,13 @@ const Lesson = ({ bab, getBab }) => {
   };
 
   const deleteLesson = async () => {
-    setBtn(true)
+    setBtn(true);
     await axios
       .post(urlDeleteMateri + `/${id}`)
       .then(function (response) {
         getBab();
-        setModal(false)
-        setBtn(false)
+        setDialog(false);
+        setBtn(false);
         toast({
           title: "Lesson deleted.",
           description: "We've deleted the lesson for you.",
@@ -178,7 +182,7 @@ const Lesson = ({ bab, getBab }) => {
       })
       .catch((e) => {
         const message = e.response.data.message;
-        setBtn(false)
+        setBtn(false);
         toast({
           description: message,
           status: "error",
@@ -190,13 +194,13 @@ const Lesson = ({ bab, getBab }) => {
   };
 
   const deleteBab = async () => {
-    setBtn(true)
+    setBtn(true);
     await axios
       .post(urlDeleteBab + `/${bab.id}`)
       .then(function (response) {
         getBab();
-        setModal(false)
-        setBtn(false)
+        setDialog(false);
+        setBtn(false);
         toast({
           title: "Section deleted.",
           description: "We've deleted a section here.",
@@ -208,7 +212,7 @@ const Lesson = ({ bab, getBab }) => {
       })
       .catch((e) => {
         const message = e.response.data.message;
-        setBtn(false)
+        setBtn(false);
         toast({
           description: message,
           status: "error",
@@ -227,68 +231,66 @@ const Lesson = ({ bab, getBab }) => {
         <AccordionPanel
           pb={4}
           key={i}
-          className="hover:bg-gray-100 transform duration-300"
+          className="hover:bg-grey-100 transform duration-300"
         >
           <div className="flex items-center justify-between">
             <div className="flex space-x-2 items-center">
               <p>{item.judul}</p>
               {item.tipe === 1 ? (
-                <Label color="cyan">materi</Label>
+                <Chip color="cyan" value="materi" />
               ) : (
-                <Label color="teal">soal</Label>
+                <Chip color="teal" value="soal" />
               )}
             </div>
-            <DropdownS
-              color="transparent"
-              placement="top-end"
-              buttonText={
-                <DotsVerticalIcon className="h-6 hover:text-cyan-600" />
-              }
-              buttonType="link"
-              size="regular"
-              ripple="light"
-              rounded={true}
-            >
-              <DropdownLink
-                color="teal"
-                ripple="light"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setAction("edit");
-                  setJudul(item.judul);
-                  setTipe(item.tipe);
-                  setEditor(editorState)
-                  setId(item.id);
-                  setModal(true);
-                }}
-              >
-                <div className="flex items-center space-x-2">
-                  <PencilIcon className="h-6" />
-                  <p>Edit</p>
-                </div>
-              </DropdownLink>
-              <DropdownLink
-                color="pink"
-                ripple="light"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setAction("delete");
-                  setId(item.id);
-                  setModal(true);
-                }}
-              >
-                <div className="flex items-center space-x-2">
-                  <TrashIcon className="h-6" />
-                  <p>Delete</p>
-                </div>
-              </DropdownLink>
-            </DropdownS>
+            <Menu>
+              <MenuHandler>
+                <Button variant="text" color="grey">
+                  <DotsVerticalIcon className="h-6" />
+                </Button>
+              </MenuHandler>
+              <MenuList>
+                <MenuItem
+                  color="teal"
+                  ripple="light"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setAction("edit");
+                    setJudul(item.judul);
+                    setTipe(item.tipe);
+                    setEditor(editorState);
+                    setId(item.id);
+                    setDialog(true);
+                  }}
+                >
+                  <div className="flex items-center space-x-2">
+                    <PencilIcon className="h-6" />
+                    <p>Edit</p>
+                  </div>
+                </MenuItem>
+                <MenuItem
+                  color="pink"
+                  ripple="light"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setAction("delete");
+                    setId(item.id);
+                    setDialog(true);
+                  }}
+                >
+                  <div className="flex items-center space-x-2">
+                    <TrashIcon className="h-6" />
+                    <p>Delete</p>
+                  </div>
+                </MenuItem>
+              </MenuList>
+            </Menu>
           </div>
         </AccordionPanel>
       ))}
       <AccordionPanel>
         <div className="flex space-x-3 justify-center">
           <Button
+            className="flex items-center space-x-2"
             color="cyan"
             size="sm"
             rounded={false}
@@ -296,16 +298,17 @@ const Lesson = ({ bab, getBab }) => {
             iconOnly={false}
             ripple="dark"
             onClick={(e) => {
-              setModal(true);
+              setDialog(true);
               setAction("add");
-              setJudul('')
-              setEditor(editorState)
+              setJudul("");
+              setEditor(editorState);
             }}
           >
             <PlusCircleIcon className="h-6" />
-            Tambah
+            <Typography variant="small">Tambah</Typography>
           </Button>
           <Button
+            className="flex items-center space-x-2"
             color="teal"
             size="sm"
             rounded={false}
@@ -313,15 +316,16 @@ const Lesson = ({ bab, getBab }) => {
             iconOnly={false}
             ripple="dark"
             onClick={(e) => {
-              setModal(true);
+              setDialog(true);
               setJudul(bab.judul);
               setAction("editS");
             }}
           >
             <PencilIcon className="h-6" />
-            edit section
+            <Typography variant="small">edit section</Typography>
           </Button>
           <Button
+            className="flex items-center space-x-2"
             color="pink"
             size="sm"
             rounded={false}
@@ -329,37 +333,37 @@ const Lesson = ({ bab, getBab }) => {
             iconOnly={false}
             ripple="dark"
             onClick={(e) => {
-              setModal(true);
+              setDialog(true);
               setAction("deleteS");
             }}
           >
             <TrashIcon className="h-6" />
-            Delete Section
+            <Typography variant="small">delete section</Typography>
           </Button>
         </div>
       </AccordionPanel>
-      <Modal size="regular" active={modal} toggler={() => setModal(false)}>
-        <ModalHeader toggler={() => setModal(false)}>
+      <Dialog size="regular" open={dialog} toggler={() => setDialog(false)}>
+        <DialogHeader>
           {action === "add"
             ? "Add"
             : action === "edit" || action === "editS"
             ? "Edit"
             : "Delete"}
-        </ModalHeader>
+        </DialogHeader>
         {action === "delete" || action === "deleteS" ? (
           <div>
-            <ModalBody>
+            <DialogBody divider>
               <div className="py-6">
                 <p className="text-center text-xl text-red-600 font-semibold">
                   Delete this {action === "delete" ? "lesson" : "section"}?
                 </p>
               </div>
-            </ModalBody>
-            <ModalFooter>
+            </DialogBody>
+            <DialogFooter>
               <Button
                 color="red"
-                buttonType="link"
-                onClick={(e) => setModal(false)}
+                variant="text"
+                onClick={(e) => setDialog(false)}
                 ripple="dark"
               >
                 Close
@@ -378,26 +382,31 @@ const Lesson = ({ bab, getBab }) => {
                   }
                 }}
               >
-                Save Changes
+                {btn ? (
+                  <RefreshIcon className="h-5 animate-spin" />
+                ) : (
+                  "Save Changes"
+                )}
               </Button>
-            </ModalFooter>
+            </DialogFooter>
           </div>
         ) : action === "editS" ? (
           <div>
-            <ModalBody>
+            <DialogBody divider>
               <Input
-                placeholder="judul"
+                variant="outlined"
+                label="judul"
                 value={judul}
                 onInput={(e) => setJudul(e.target.value)}
               />
-            </ModalBody>
-            <ModalFooter>
+            </DialogBody>
+            <DialogFooter>
               <Button
                 color="red"
-                buttonType="link"
+                variant="text"
                 onClick={(e) => {
                   e.preventDefault();
-                  setModal(false);
+                  setDialog(false);
                 }}
                 ripple="dark"
               >
@@ -410,16 +419,21 @@ const Lesson = ({ bab, getBab }) => {
                 disabled={btn}
                 onClick={updateBab}
               >
-                Save Changes
+                {btn ? (
+                  <RefreshIcon className="h-5 animate-spin" />
+                ) : (
+                  "Save Changes"
+                )}
               </Button>
-            </ModalFooter>
+            </DialogFooter>
           </div>
         ) : (
           <div>
-            <ModalBody>
+            <DialogBody divider className="flex-col">
               <div className="flex justify-between space-x-5">
                 <Input
-                  placeholder="judul"
+                  variant="outlined"
+                  label="judul"
                   value={judul}
                   onInput={(e) => setJudul(e.target.value)}
                 />
@@ -430,7 +444,8 @@ const Lesson = ({ bab, getBab }) => {
               </div>
               <div className="mt-4 border h-full p-3 rounded-lg">
                 <Editor
-                  placeholder="write something...."
+                  variant="outlined"
+                  label="write something...."
                   editorState={editor}
                   toolbarClassName="toolbarClassName"
                   wrapperClassName="wrapperClassName"
@@ -446,14 +461,14 @@ const Lesson = ({ bab, getBab }) => {
                   )}
                 />
               </div>
-            </ModalBody>
-            <ModalFooter>
+            </DialogBody>
+            <DialogFooter>
               <Button
                 color="red"
-                buttonType="link"
+                variant="text"
                 onClick={(e) => {
                   e.preventDefault();
-                  closeModal();
+                  closeDialog();
                 }}
                 ripple="dark"
               >
@@ -473,12 +488,16 @@ const Lesson = ({ bab, getBab }) => {
                 }}
                 ripple="light"
               >
-                Save Changes
+                {btn ? (
+                  <RefreshIcon className="h-5 animate-spin" />
+                ) : (
+                  "Save Changes"
+                )}
               </Button>
-            </ModalFooter>
+            </DialogFooter>
           </div>
         )}
-      </Modal>
+      </Dialog>
     </div>
   );
 };

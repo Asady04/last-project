@@ -3,13 +3,12 @@ import {
   Card,
   CardBody,
   CardHeader,
-  CardRow,
-  CardStatus,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
+  Dialog,
+  DialogBody,
+  DialogFooter,
+  DialogHeader,
   Input,
+  Typography,
 } from "@material-tailwind/react";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
@@ -25,6 +24,7 @@ import {
   PhotographIcon,
   PlusCircleIcon,
   PlusIcon,
+  RefreshIcon,
   TrashIcon,
 } from "@heroicons/react/outline";
 import { UserGroupIcon } from "@heroicons/react/solid";
@@ -33,16 +33,18 @@ import { Editor } from "react-draft-wysiwyg";
 import draftjsToHtml from "draftjs-to-html";
 import { useToast } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
+import { set } from "draft-js/lib/DefaultDraftBlockRenderMap";
 
 const Kursus = () => {
   const [kursus, setKursus] = React.useState([]);
-  const [modal, setModal] = React.useState(false);
+  const [dialog, setDialog] = React.useState(false);
   const [action, setAction] = React.useState();
   const [judul, setJudul] = React.useState();
   const [desc, setDesc] = React.useState();
   const [pict, setPict] = React.useState();
   const [img, setImg] = React.useState();
   const [btn, setBtn] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
   const [id, setId] = React.useState();
   let editorState = EditorState.createEmpty();
   const [state, setState] = React.useState(editorState);
@@ -68,7 +70,7 @@ const Kursus = () => {
         <div className="flex justify-between">
           <Button
             color="teal"
-            buttonType="link"
+            variant="text"
             size="regular"
             rounded={false}
             block={false}
@@ -82,7 +84,7 @@ const Kursus = () => {
           </Button>
           <Button
             color="pink"
-            buttonType="link"
+            variant="text"
             size="regular"
             rounded={false}
             block={false}
@@ -96,7 +98,7 @@ const Kursus = () => {
           </Button>
           <Button
             color="cyan"
-            buttonType="link"
+            variant="text"
             size="regular"
             rounded={false}
             block={false}
@@ -109,8 +111,8 @@ const Kursus = () => {
             <PlusCircleIcon className="h-8" />
           </Button>
           <Button
-            color="gray"
-            buttonType="link"
+            color="grey"
+            variant="text"
             size="regular"
             rounded={false}
             block={false}
@@ -129,13 +131,13 @@ const Kursus = () => {
   ];
 
   const deleteHandle = (e, id) => {
-    setModal(true);
+    setDialog(true);
     setId(id);
     setAction("delete");
   };
 
   const imgHandle = (e, img) => {
-    setModal(true);
+    setDialog(true);
     setAction("img");
     setImg(img);
   };
@@ -145,6 +147,7 @@ const Kursus = () => {
   };
 
   const getKursus = async () => {
+    setLoading(true);
     await axios
       .get(urlKursus, {
         headers: {
@@ -154,8 +157,10 @@ const Kursus = () => {
       .then(function (response) {
         const data = response;
         setKursus(data.data.data);
+        setLoading(false);
       });
   };
+  console.log(kursus);
 
   const addKursus = async (e) => {
     e.preventDefault();
@@ -167,7 +172,7 @@ const Kursus = () => {
       .post(urlSaveKursus, formData)
       .then(function (response) {
         getKursus();
-        setModal(false);
+        setDialog(false);
         setBtn(false);
         toast({
           title: "Course created.",
@@ -213,7 +218,7 @@ const Kursus = () => {
       .then(function (response) {
         getKursus();
         setBtn(false);
-        setModal(false);
+        setDialog(false);
         setState(editorState);
         toast({
           title: "Course updated.",
@@ -243,7 +248,7 @@ const Kursus = () => {
     setId(row.id);
     setPict(row.gambar);
     setDesc(row.deskripsi);
-    setModal(true);
+    setDialog(true);
   };
 
   const deleteKursus = async (i) => {
@@ -252,7 +257,7 @@ const Kursus = () => {
       .post(urlDeleteKursus + `/${i}`)
       .then(function (response) {
         getKursus();
-        setModal(false);
+        setDialog(false);
         setBtn(false);
         toast({
           title: "Course deleted.",
@@ -276,8 +281,8 @@ const Kursus = () => {
       });
   };
 
-  const closeModal = () => {
-    setModal(false);
+  const closeDialog = () => {
+    setDialog(false);
     setJudul("");
     setState(editorState);
   };
@@ -289,40 +294,53 @@ const Kursus = () => {
     <div>
       <Card className="mt-6">
         <CardBody>
-          <DataTable
-            title={
-              <div className="flex justify-end py-3 mb-6">
-                <Button
-                  color="cyan"
-                  size="sm"
-                  rounded={false}
-                  block={false}
-                  iconOnly={false}
-                  ripple="dark"
-                  onClick={(e) => {
-                    setModal(true);
-                    setJudul("");
-                    setState(editorState);
-                    setAction("add");
-                  }}
-                >
-                  <PlusCircleIcon className="h-6" />
-                  Tambah
-                </Button>
-              </div>
-            }
-            columns={column}
-            data={kursus}
-            pagination={""}
-            subHeader={""}
-            selectableRows={""}
-            persistTableHead
-            dense
-          />
+          {loading ? (
+            <div className="flex justify-center">
+              <RefreshIcon className="h-7 stroke-cyan-700 animate-spin" />
+            </div>
+          ) : (
+            <DataTable
+              title={
+                <div className="flex justify-end py-3 mb-6">
+                  <Button
+                    className="flex space-x-2 items-center justify-center"
+                    color="cyan"
+                    size="sm"
+                    rounded={false}
+                    block={false}
+                    iconOnly={false}
+                    ripple="dark"
+                    onClick={(e) => {
+                      setDialog(true);
+                      setJudul("");
+                      setPict(null);
+                      setState(editorState);
+                      setAction("add");
+                    }}
+                  >
+                    <PlusCircleIcon className="h-6" />
+                    <Typography variant="small">add course</Typography>
+                  </Button>
+                </div>
+              }
+              columns={column}
+              data={kursus}
+              pagination={""}
+              subHeader={""}
+              selectableRows={""}
+              persistTableHead
+              dense
+            />
+          )}
         </CardBody>
       </Card>
-      <Modal size="lg" active={modal} toggler={() => setModal(false)}>
-        <ModalHeader toggler={() => setModal(false)}>
+      <Dialog
+        className="max-h-screen"
+        size="md"
+        open={dialog}
+        handler={() => setDialog(false)}
+      >
+        <DialogHeader>
           {action === "add"
             ? "Add Course"
             : action === "edit"
@@ -330,21 +348,21 @@ const Kursus = () => {
             : action === "img"
             ? "Course Image"
             : "Delete Account"}
-        </ModalHeader>
+        </DialogHeader>
         {action === "delete" ? (
           <div>
-            <ModalBody>
+            <DialogBody divider>
               <div className="py-6">
                 <p className="text-center text-xl text-red-600 font-semibold">
                   Are You Sure?
                 </p>
               </div>
-            </ModalBody>
-            <ModalFooter>
+            </DialogBody>
+            <DialogFooter>
               <Button
                 color="red"
-                buttonType="link"
-                onClick={(e) => setModal(false)}
+                variant="text"
+                onClick={(e) => setDialog(false)}
                 ripple="dark"
               >
                 Close
@@ -356,24 +374,28 @@ const Kursus = () => {
                 disabled={btn}
                 onClick={(e) => deleteKursus(id)}
               >
-                Save Changes
+                {btn ? (
+                  <RefreshIcon className="h-5 animate-spin" />
+                ) : (
+                  "Save Changes"
+                )}
               </Button>
-            </ModalFooter>
+            </DialogFooter>
           </div>
         ) : action === "img" ? (
           <div>
-            <ModalBody>
+            <DialogBody divider>
               <div className="py-6">
                 <img src={img} alt="" />
               </div>
-            </ModalBody>
+            </DialogBody>
           </div>
         ) : (
           <div>
-            <ModalBody>
+            <DialogBody divider className="flex-col">
               <div>
                 <Input
-                  placeholder="judul"
+                  label="judul"
                   value={judul}
                   onInput={(e) => setJudul(e.target.value)}
                 />
@@ -387,7 +409,7 @@ const Kursus = () => {
               </div>
               <div className="mt-4 border h-full p-3 rounded-lg">
                 <Editor
-                  placeholder="deskripsi"
+                  label="deskripsi"
                   editorState={state}
                   toolbarClassName="toolbarClassName"
                   wrapperClassName="wrapperClassName"
@@ -401,14 +423,14 @@ const Kursus = () => {
                   value={draftjsToHtml(convertToRaw(state.getCurrentContent()))}
                 />
               </div>
-            </ModalBody>
-            <ModalFooter>
+            </DialogBody>
+            <DialogFooter>
               <Button
                 color="red"
-                buttonType="link"
+                variant="text"
                 onClick={(e) => {
                   e.preventDefault();
-                  closeModal();
+                  closeDialog();
                 }}
                 ripple="dark"
               >
@@ -421,12 +443,16 @@ const Kursus = () => {
                 disabled={btn}
                 onClick={action === "add" ? addKursus : updateKursus}
               >
-                Save Changes
+                {btn ? (
+                  <RefreshIcon className="h-5 animate-spin" />
+                ) : (
+                  "Save Changes"
+                )}
               </Button>
-            </ModalFooter>
+            </DialogFooter>
           </div>
         )}
-      </Modal>
+      </Dialog>
     </div>
   );
 };

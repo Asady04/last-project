@@ -1,4 +1,4 @@
-let urlport = 'https://api-bimbelz.herokuapp.com/api/'
+let urlport = 'http://api-bimbelz.herokuapp.com/api/'
 
 //Auth
 export const urlRegister = urlport + 'register'

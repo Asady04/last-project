@@ -6,11 +6,12 @@ import {
   Textarea,
   useToast,
 } from "@chakra-ui/react";
+import { RefreshIcon } from "@heroicons/react/outline";
 import {
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
+  Dialog,
+  DialogBody,
+  DialogFooter,
+  DialogHeader,
 } from "@material-tailwind/react";
 import axios from "axios";
 import { values } from "draft-js/lib/DefaultDraftBlockRenderMap";
@@ -22,8 +23,9 @@ const Task = () => {
   const [task, setTask] = React.useState([]);
   const [komen, setKomen] = React.useState("");
   const [value, setValue] = React.useState(0);
-  const [modal, setModal] = React.useState(false);
+  const [dialog, setDialog] = React.useState(false);
   const [btn, setBtn] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
   const [action, setAction] = React.useState();
   const [img, setImg] = React.useState();
   const [jawaban, setJawaban] = React.useState({});
@@ -31,16 +33,18 @@ const Task = () => {
   let { id, idKursus, idBab } = state;
   let toast = useToast();
   const getJawaban = async () => {
+    setLoading(true);
     await axios
       .get(urlJawaban + `/${idKursus}/${idBab}/${id}`)
       .then(function (response) {
         const data = response;
         setTask(data.data.data);
+        setLoading(false);
       });
   };
 
   const evaluation = async (idJawaban, nama, email, gambar) => {
-    setBtn(true)
+    setBtn(true);
     await axios
       .post(urlUpdateJawaban, {
         id: idJawaban,
@@ -55,7 +59,7 @@ const Task = () => {
       })
       .then(function (response) {
         getJawaban();
-        setBtn(false)
+        setBtn(false);
         toast({
           title: "Value given",
           description: "We've set the value",
@@ -64,7 +68,7 @@ const Task = () => {
           duration: 9000,
           isClosable: true,
         });
-        setModal(false);
+        setDialog(false);
       });
   };
 
@@ -74,106 +78,119 @@ const Task = () => {
 
   return (
     <div>
-      {task.length === 0 ? (
+      {loading ? (
         <div className="flex justify-center">
-          <p className="text-cyan-800 text-lg">
-            Belum ada yang mengerjakan soal
-          </p>
+          <RefreshIcon className="h-7 stroke-cyan-700 animate-spin" />
         </div>
       ) : (
-        <div className="grid gap-3 grid-cols-2">
-          {task.map((item, i) => (
-            <div key={i} className="shadow-lg rounded-md">
-              <div className="rounded-t-md flex justify-between p-2 bg-slate-800 text-white">
-                <h2>{item.namauser}</h2>
-                <h2>{item.email}</h2>
-              </div>
-              <div
-                className="cursor-pointer"
-                onClick={(e) => {
-                  setAction("img");
-                  setImg(item.gambar);
-                  setModal(true);
-                }}
-              >
-                <img src={item.gambar} alt="" className="aspect-video" />
-              </div>
-
-              {parseInt(item.nilai) > 0 ? (
-                <div>
-                  <div className="p-3 bg-slate-600 text-white">
-                    <h2>{item.komen}</h2>
-                  </div>
-                  <div className="flex justify-between items-center pl-4">
-                    <h2
-                      className={`${
-                        parseInt(item.nilai) >= 75
-                          ? "text-green-500"
-                          : "text-red-500"
-                      }`}
-                    >
-                      {item.nilai}
-                    </h2>
-                    <Button
-                      onClick={(e) => {
-                        setValue(item.nilai);
-                        setJawaban(item);
-                        setKomen(item.komen);
-                        setAction("edit");
-                        setModal(true);
-                      }}
-                    >
-                      edit
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div>
-                  <Textarea
-                    className="resize-none"
-                    placeholder="write a comment.."
-                    value={komen}
-                    onInput={(e) => setKomen(e.target.value)}
-                  />
-                  <InputGroup>
-                    <Input
-                      value={value}
-                      onInput={(e) => setValue(e.target.value)}
-                      variant="filled"
-                      placeholder={"give value.."}
-                      type="number"
-                    />
-                    <InputRightAddon
-                      children={
-                        <Button
-                          onClick={(e) =>
-                            evaluation(
-                              item.id,
-                              item.namauser,
-                              item.email,
-                              item.gambar
-                            )
-                          }
-                        >
-                          send
-                        </Button>
-                      }
-                    />
-                  </InputGroup>
-                </div>
-              )}
+        <div>
+          {task.length === 0 ? (
+            <div className="flex justify-center">
+              <p className="text-cyan-800 text-lg">
+                Belum ada yang mengerjakan soal
+              </p>
             </div>
-          ))}
+          ) : (
+            <div className="grid gap-3 grid-cols-3">
+              {task.map((item, i) => (
+                <div key={i} className="shadow-lg rounded-md">
+                  <div className="rounded-t-md flex justify-between p-2 bg-cyan-900 text-white">
+                    <h2>{item.namauser}</h2>
+                    <h2>{item.email}</h2>
+                  </div>
+                  <div
+                    className="cursor-pointer"
+                    onClick={(e) => {
+                      setAction("img");
+                      setImg(item.gambar);
+                      setDialog(true);
+                    }}
+                  >
+                    <img src={item.gambar} alt="" className="aspect-video" />
+                  </div>
+
+                  {parseInt(item.nilai) > 0 ? (
+                    <div>
+                      <div className="p-3 bg-cyan-600 text-white">
+                        <h2>{item.komen}</h2>
+                      </div>
+                      <div className="flex justify-between items-center pl-4">
+                        <h2
+                          className={`${
+                            parseInt(item.nilai) >= 75
+                              ? "text-green-500"
+                              : "text-red-500"
+                          }`}
+                        >
+                          {item.nilai}
+                        </h2>
+                        <Button
+                          onClick={(e) => {
+                            setValue(item.nilai);
+                            setJawaban(item);
+                            setKomen(item.komen);
+                            setAction("edit");
+                            setDialog(true);
+                          }}
+                        >
+                          edit
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <Textarea
+                        className="resize-none"
+                        placeholder="write a comment.."
+                        value={komen}
+                        onInput={(e) => setKomen(e.target.value)}
+                      />
+                      <InputGroup>
+                        <Input
+                          value={value}
+                          onInput={(e) => setValue(e.target.value)}
+                          variant="filled"
+                          placeholder={"give value.."}
+                          type="number"
+                        />
+                        <InputRightAddon
+                          children={
+                            <Button
+                              disabled={btn}
+                              onClick={(e) =>
+                                evaluation(
+                                  item.id,
+                                  item.namauser,
+                                  item.email,
+                                  item.gambar
+                                )
+                              }
+                            >
+                              {btn ? (
+                                <RefreshIcon className="h-5 animate-spin" />
+                              ) : (
+                                "send"
+                              )}
+                            </Button>
+                          }
+                        />
+                      </InputGroup>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
-      <Modal active={modal} toggler={() => setModal(false)}>
-        <ModalHeader toggler={() => setModal(false)}>
+      <Dialog open={dialog} handler={() => setDialog(false)}>
+        <DialogHeader>
           {action === "edit" ? "Edit value" : "Task Image"}
-        </ModalHeader>
+        </DialogHeader>
         {action === "edit" ? (
           <div>
-            <ModalBody>
+            <DialogBody className="flex-col">
               <Textarea
                 className="resize-none"
                 value={komen}
@@ -186,14 +203,14 @@ const Task = () => {
                   onInput={(e) => setValue(e.target.value)}
                 />
               </div>
-            </ModalBody>
-            <ModalFooter>
+            </DialogBody>
+            <DialogFooter>
               <Button
                 color="red"
                 variant="ghost"
                 onClick={(e) => {
                   e.preventDefault();
-                  setModal(false);
+                  setDialog(false);
                 }}
                 ripple="dark"
               >
@@ -202,6 +219,7 @@ const Task = () => {
               <Button
                 variant="solid"
                 colorScheme="teal"
+                disabled={btn}
                 onClick={(e) =>
                   evaluation(
                     jawaban.id,
@@ -212,18 +230,22 @@ const Task = () => {
                 }
                 ripple="light"
               >
-                Save Changes
+                {btn ? (
+                  <RefreshIcon className="h-5 animate-spin" />
+                ) : (
+                  "Save Changes"
+                )}
               </Button>
-            </ModalFooter>
+            </DialogFooter>
           </div>
         ) : (
-          <ModalBody>
+          <DialogBody>
             <div className="py-2">
               <img src={img} alt="" />
             </div>
-          </ModalBody>
+          </DialogBody>
         )}
-      </Modal>
+      </Dialog>
     </div>
   );
 };

@@ -29,7 +29,7 @@ const Lesson = ({ materi }) => {
           {item.tipe === 2 ? (
             <AccordionPanel
               pb={4}
-              className="cursor-pointer hover:bg-gray-100 transform duration-300"
+              className="cursor-pointer hover:bg-grey-100 transform duration-300"
               onClick={(e) => {
                 nav("/admin/evaluation", {
                   state: {

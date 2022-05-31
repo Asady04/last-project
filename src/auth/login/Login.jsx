@@ -1,17 +1,19 @@
 import React, { Component } from "react";
 import axios from "axios";
-import Card from "@material-tailwind/react/Card";
-import CardHeader from "@material-tailwind/react/CardHeader";
-import CardBody from "@material-tailwind/react/CardBody";
-import Input from "@material-tailwind/react/Input";
-import Button from "@material-tailwind/react/Button";
-import H5 from "@material-tailwind/react/Heading5";
-import { EyeIcon, EyeOffIcon } from "@heroicons/react/outline";
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  Input,
+  Button,
+  CardFooter,
+  Typography,
+} from "@material-tailwind/react";
+import { EyeIcon, EyeOffIcon, RefreshIcon } from "@heroicons/react/outline";
 import { urlLogin, urlProgress } from "../../url";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.png";
 import { useToast } from "@chakra-ui/react";
-import { CardFooter, Paragraph } from "@material-tailwind/react";
 
 const Login = () => {
   let nav = useNavigate();
@@ -19,12 +21,14 @@ const Login = () => {
   const [email, setEmail] = React.useState([]);
   const [password, setPassword] = React.useState([]);
   const [showPassword, setShowPassword] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
 
   const toggleShow = () => {
     setShowPassword(showPassword ? false : true);
   };
   const login = async (e) => {
     e.preventDefault();
+    setLoading(true)
     await axios
       .post(urlLogin, {
         email: email,
@@ -36,9 +40,9 @@ const Login = () => {
         localStorage.setItem("token", data.data.token.token);
         localStorage.setItem("email", data.data.user.email);
         localStorage.setItem("name", data.data.user.name);
-
+        setLoading(false)
         if (localStorage.getItem("role") === "admin") {
-          localStorage.setItem('tabadmin', 0)
+          localStorage.setItem("tabadmin", 0);
           nav("/admin/data", { replace: true });
         } else {
           nav("/user/course", { replace: true });
@@ -46,6 +50,7 @@ const Login = () => {
       })
       .catch((e) => {
         const message = e.response.data.message;
+        setLoading(false)
         if (message === "Unauthorized") {
           toast({
             title: message,
@@ -79,10 +84,12 @@ const Login = () => {
           </div>
         </nav>
         <div className="flex h-screen items-center w-screen">
-          <div className="mx-auto">
-            <Card>
-              <CardHeader color="cyan" size="lg">
-                <H5 color="white">Login</H5>
+          <div className="mx-auto w-1/4">
+            <Card className='w-full'>
+              <CardHeader color="cyan" className="py-5">
+                <Typography variant="h5" color="white" className='text-center'>
+                  Login
+                </Typography>
               </CardHeader>
 
               <CardBody>
@@ -92,8 +99,8 @@ const Login = () => {
                       type="text"
                       color="cyan"
                       size="regular"
-                      outline={true}
-                      placeholder="Account"
+                      variant="outlined"
+                      label="Account"
                       value={email}
                       onInput={(e) => setEmail(e.target.value)}
                     />
@@ -103,16 +110,16 @@ const Login = () => {
                       type={showPassword ? "text" : "password"}
                       color="cyan"
                       size="regular"
-                      outline={true}
-                      placeholder="Password"
+                      variant="outlined"
+                      label="Password"
                       value={password}
                       onInput={(e) => setPassword(e.target.value)}
                     />
                     <div onClick={toggleShow} className="cursor-pointer">
                       {showPassword ? (
-                        <EyeOffIcon className="absolute h-1/2 top-3 right-5 text-gray-400" />
+                        <EyeOffIcon className="absolute h-1/2 top-3 right-5 text-grey-400" />
                       ) : (
-                        <EyeIcon className="absolute h-1/2 top-3 right-5 text-gray-400" />
+                        <EyeIcon className="absolute h-1/2 top-3 right-5 text-grey-400" />
                       )}
                     </div>
                   </div>
@@ -124,14 +131,16 @@ const Login = () => {
                       size="regular"
                       ripple="light"
                     >
-                      Login
+                      {loading? <RefreshIcon className="animate-spin h-5"/> : 'Login'}
                     </Button>
                   </div>
                 </form>
               </CardBody>
               <CardFooter>
-                <Link to='/register'>
-                  <p className="text-center text-cyan-600 text-xs">dont have an account?</p>
+                <Link to="/register">
+                  <p className="text-center text-cyan-600 text-xs">
+                    dont have an account?
+                  </p>
                 </Link>
               </CardFooter>
             </Card>
