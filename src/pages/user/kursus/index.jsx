@@ -10,6 +10,7 @@ import {
   CardBody,
   CardFooter,
   CardHeader,
+  Progress,
   Typography,
 } from "@material-tailwind/react";
 import axios from "axios";
@@ -84,22 +85,28 @@ const Kursus = () => {
                         <CardBody>
                           <Typography variant="h5">{item.judul}</Typography>
                           <Typography
+                            variant="small"
                             dangerouslySetInnerHTML={{ __html: item.deskripsi }}
                           ></Typography>
                         </CardBody>
-                        <CardFooter>
-                          <Button
-                            className="flex items-center space-x-2"
-                            ripple="light"
-                            color="cyan"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              nav("/user/lesson", { state: { id: item.id } });
-                            }}
-                          >
-                            <Typography variant="small">learn</Typography>{" "}
-                            <ArrowRightIcon className="h-4" />
-                          </Button>
+                        <CardFooter divider>
+                          <div className="flex justify-end pb-5">
+                            <Button
+                              size="sm"
+                              className="flex items-center space-x-2"
+                              ripple="light"
+                              color="cyan"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                nav("/user/lesson", { state: { id: item.id } });
+                              }}
+                            >
+                              <Typography variant="small">learn</Typography>{" "}
+                              <ArrowRightIcon className="h-4" />
+                            </Button>
+                          </div>
+
+                          <Progress variant="gradient" value={50} />
                         </CardFooter>
                       </Card>
                     </div>
@@ -127,19 +134,24 @@ const Kursus = () => {
                             }}
                           ></Typography>
                         </CardBody>
-                        <CardFooter>
-                          <Button
-                            className="flex items-center space-x-2"
-                            ripple="light"
-                            color="cyan"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              nav("/user/lesson", { state: { id: item.id } });
-                            }}
-                          >
-                            <Typography variant="small">learn</Typography>{" "}
-                            <ArrowRightIcon className="h-4" />
-                          </Button>
+                        <CardFooter divider>
+                          <div className="flex justify-end pb-5">
+                            <Button
+                              size="sm"
+                              className="flex items-center space-x-2"
+                              ripple="light"
+                              color="cyan"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                nav("/user/lesson", { state: { id: item.kursus[0].id } });
+                              }}
+                            >
+                              <Typography variant="small">learn</Typography>{" "}
+                              <ArrowRightIcon className="h-4" />
+                            </Button>
+                          </div>
+
+                          <Progress variant="gradient" value={50} />
                         </CardFooter>
                       </Card>
                     </div>
