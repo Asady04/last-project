@@ -347,7 +347,7 @@ const Kursus = () => {
             ? "Edit Course"
             : action === "img"
             ? "Course Image"
-            : "Delete Account"}
+            : "Delete Course"}
         </DialogHeader>
         {action === "delete" ? (
           <div>
